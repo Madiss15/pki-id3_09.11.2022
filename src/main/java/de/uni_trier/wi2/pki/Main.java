@@ -12,7 +12,7 @@ import java.util.List;
 
 
 public class Main {
-    //Dies ist ein Test
+    //Dies ist ein Test 4
     static int numberOfBins = 12;
     //Test 2
     static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
