@@ -14,7 +14,7 @@ import java.util.List;
 public class Main {
     //Dies ist ein Test 4
     static int numberOfBins = 12;
-    //Test 2
+    // Test 5
     static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
     //potenzielle bereits diskrete Attribute werden nicht genutzt
 
