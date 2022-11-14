@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Main {
     static int numberOfBins = 12;
+    static int labelIndex = 3;
 
     static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
     //potenzielle bereits diskrete Attribute werden nicht genutzt
@@ -27,7 +28,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        List<String[]> content = CSVReader.readCsvToArray("src/main/resources/Weather.csv", ";", ignoreHead);
+        List<String[]> content = CSVReader.readCsvToArray("src/main/resources/vorlesung.csv", ";", ignoreHead);
         type = new int[content.get(0).length];
         typeTester(content);
         List<CSVAttribute[]> attributes = attributeListConverter(content);
@@ -43,7 +44,7 @@ public class Main {
             }
         }
         EntropyUtils entropyUtils = new EntropyUtils();
-        List<Double> outcome = entropyUtils.calcInformationGain(attributes,0);
+        List<Double> outcome = entropyUtils.calcInformationGain(attributes,labelIndex);
         // TODO: this should be the main executable method for your project
     }
 

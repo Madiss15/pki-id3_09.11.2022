@@ -26,7 +26,6 @@ public class EntropyUtils {
         //System.out.println("Enter labelIndex you want to predict (counting starts at 0)");
         //Scanner sc = new Scanner(System.in);
         //labelIndex = sc.nextInt();
-        labelIndex = 4;
         System.out.println("Label index " + labelIndex);
         List<String> range = rangeFinder(matrix1, labelIndex);
         double he = he(matrix1, labelIndex, range);
