@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="pki-id3_1444" />
+        <module name="pki-id3_09.11.2022" />
+        <module name="pki-id3_05.11.2022" />
+        <module name="pki-id3_07.11.2022" />
+        <module name="pki-id3" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
