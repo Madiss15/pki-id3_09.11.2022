@@ -6,15 +6,15 @@ import de.uni_trier.wi2.pki.io.attr.Categorical;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
 import de.uni_trier.wi2.pki.io.attr.Discrete;
 import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
+import de.uni_trier.wi2.pki.util.EntropyUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class Main {
-    //Dies ist ein Test 4
     static int numberOfBins = 12;
-    // Test 5
+
     static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
     //potenzielle bereits diskrete Attribute werden nicht genutzt
 
@@ -23,20 +23,14 @@ public class Main {
     //0=categorical 1=continuous 2=discrete
 
     static boolean ignoreHead = false;
-    static int skippFirstLine = 0; //Wenn ignoreHead false, muss bei der Entscheidung des Attributentyps die erste Zeile,
-    //die in dem Fall die Namen der Attribute enthält, übersprungen werden.
-
+    static int skippFirstLine = 0; //Dieser Wert muss 1 sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen.
 
     public static void main(String[] args) {
-        if (!ignoreHead) {
-            skippFirstLine++;
-        }
 
-        List<String[]> content = CSVReader.readCsvToArray("src/main/resources/churn_data.csv", ";", ignoreHead);
+        List<String[]> content = CSVReader.readCsvToArray("src/main/resources/Weather.csv", ";", ignoreHead);
         type = new int[content.get(0).length];
         typeTester(content);
         List<CSVAttribute[]> attributes = attributeListConverter(content);
-
         for (int k = 0; k < attributes.get(skippFirstLine).length; k++) {
             System.out.println(content.get(0)[k] + " is " + attributes.get(0)[k].getClass().getSimpleName());
         }
@@ -48,7 +42,8 @@ public class Main {
                 attributes = discretizer.discretize(numberOfBins, attributes, i);
             }
         }
-
+        EntropyUtils entropyUtils = new EntropyUtils();
+        List<Double> outcome = entropyUtils.calcInformationGain(attributes,0);
         // TODO: this should be the main executable method for your project
     }
 
