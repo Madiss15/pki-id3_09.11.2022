@@ -21,9 +21,13 @@ public interface CSVAttribute<T> extends Comparable<CSVAttribute<T>>, Cloneable 
      */
     T getValue();
 
-    void setBinNumber(T binNumber); //Neu hinzugefügt
+    void setBackUpValue(T backUpValue); //Neu hinzugefügt
 
-    T getBinNumber();               //Neu hinzugefügt
+    T getBackUpValue();               //Neu hinzugefügt
+
+    void setAttributIndex(T attributIndex); //Neu hinzugefügt
+
+    T getAttributIndex();//Neu hinzugefügt
 
     /**
      * Clone this attribute with its value.

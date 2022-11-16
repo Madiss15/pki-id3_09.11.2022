@@ -22,10 +22,6 @@ public class CSVReader {
      * @throws IOException if something goes wrong. Exception should be handled at the calling function.
      */
 
-    private String  relativePath;
-    private char delimiter;
-    private boolean ignorehead;
-
     public static List<String[]> readCsvToArray(String relativePath, String delimiter, boolean ignoreHeader){
         List<String[]> readDate = new ArrayList<>();
         int rows = 0;

@@ -6,36 +6,41 @@ import de.uni_trier.wi2.pki.io.attr.Categorical;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
 import de.uni_trier.wi2.pki.io.attr.Discrete;
 import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
+import de.uni_trier.wi2.pki.preprocess.Formater;
+import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 import de.uni_trier.wi2.pki.util.EntropyUtils;
+import de.uni_trier.wi2.pki.util.ID3Utils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class Main {
-    static int numberOfBins = 12;
-    static int labelIndex = 3;
-
-    static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
+    static int numberOfBins = 5;
+    static int labelIndex = 7;
+    static List<String[]> content = new ArrayList<>();
+    static boolean testIfDiscrete = false;      // false -> es wird nur auf categorical und continuous getestet
     //potenzielle bereits diskrete Attribute werden nicht genutzt
 
-    static int[] type; //Falls es eine Spalte gibt, in der nur ganze Zahlen abgespeichert werden,
+    public static int[] type; //Falls es eine Spalte gibt, in der nur ganze Zahlen abgespeichert werden,
     //können diese bereits als diskret vermerkt werden.
     //0=categorical 1=continuous 2=discrete
 
     static boolean ignoreHead = false;
-    static int skippFirstLine = 0; //Dieser Wert muss 1 sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen.
+    static int skippFirstLine = 1; //Dieser Wert muss 1 sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen.
 
     public static void main(String[] args) {
+        if (ignoreHead)
+            skippFirstLine = 5;
 
-        List<String[]> content = CSVReader.readCsvToArray("src/main/resources/vorlesung.csv", ";", ignoreHead);
+        content = CSVReader.readCsvToArray("src/main/resources/churn_data.csv", ";", ignoreHead);
         type = new int[content.get(0).length];
         typeTester(content);
         List<CSVAttribute[]> attributes = attributeListConverter(content);
         for (int k = 0; k < attributes.get(skippFirstLine).length; k++) {
             System.out.println(content.get(0)[k] + " is " + attributes.get(0)[k].getClass().getSimpleName());
         }
-        System.out.println("##############################");
 
         BinningDiscretizer discretizer = new BinningDiscretizer();
         for (int i = 0; i < type.length; i++) {
@@ -43,8 +48,10 @@ public class Main {
                 attributes = discretizer.discretize(numberOfBins, attributes, i);
             }
         }
-        EntropyUtils entropyUtils = new EntropyUtils();
-        List<Double> outcome = entropyUtils.calcInformationGain(attributes,labelIndex);
+        Formater formater = new Formater();  // Der Code funktioniert nur, wenn der Labelindex am Ende CSV-Datei ist, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+        List<CSVAttribute[]> formatedAtributes = formater.format(attributes, labelIndex);
+        ID3Utils utils = new ID3Utils();
+        DecisionTreeNode root = utils.createTree(formatedAtributes, formatedAtributes.get(0).length - 1);
         // TODO: this should be the main executable method for your project
     }
 
@@ -66,12 +73,18 @@ public class Main {
             if (type[i] == 0) {
                 a = new Categorical();
                 a.setValue(line[i]);
+                a.setBackUpValue(line[i]);
+                a.setAttributIndex(i);
             } else if (type[i] == 1) {
                 a = new Continuous();
-                a.setValue(Double.parseDouble(line[i]));
+                a.setValue(line[i]);
+                a.setBackUpValue(Double.parseDouble(line[i]));
+                a.setAttributIndex(i);
             } else {
                 a = new Discrete();
-                a.setValue(Integer.parseInt(line[i]));
+                a.setValue(line[i]);
+                a.setBackUpValue(Integer.parseInt(line[i]));
+                a.setAttributIndex(i);
             }
             attributeLine[i] = a;
         }
@@ -99,4 +112,18 @@ public class Main {
             }
         }
     }
+
+    public static String getIndexName(int a) {
+        return (content.get(0)[a]);
+    }
+
+    public static List rangeFinder(List<CSVAttribute[]> matrix1, int labelIndex) {
+        List range = new LinkedList();
+        for (int i = 0; i < matrix1.size(); i++)
+            if (!range.contains(matrix1.get(i)[labelIndex].getValue()))
+                range.add(matrix1.get(i)[labelIndex].getValue());
+
+        return range;
+    }
+
 }

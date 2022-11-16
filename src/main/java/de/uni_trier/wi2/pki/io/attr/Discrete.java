@@ -1,13 +1,14 @@
 package de.uni_trier.wi2.pki.io.attr;
 
-public class Discrete implements CSVAttribute{
+public class Discrete implements CSVAttribute {
 
-    private int value;
-    private int binNumber;
+    private String value;
+    private int backUpValue;
+    private int attributIndex;
 
     @Override
     public void setValue(Object value) {
-        this.value = (int) value;
+        this.value = (String) value;
     }
 
     @Override
@@ -16,13 +17,24 @@ public class Discrete implements CSVAttribute{
     }
 
     @Override
-    public void setBinNumber(Object binNumber) {
-        this.binNumber = (int) binNumber;
+    public void setBackUpValue(Object backUpValue) {
+        this.backUpValue = (int) backUpValue;
     }
 
     @Override
-    public Object getBinNumber() {
-        return binNumber;
+    public Object getBackUpValue() {
+        return backUpValue;
+    }
+
+
+    @Override
+    public void setAttributIndex(Object attributIndex) {
+        this.attributIndex = (int) attributIndex;
+    }
+
+    @Override
+    public Object getAttributIndex() {
+        return attributIndex;
     }
 
 

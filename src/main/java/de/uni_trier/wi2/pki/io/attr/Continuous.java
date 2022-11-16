@@ -2,12 +2,13 @@ package de.uni_trier.wi2.pki.io.attr;
 
 public class Continuous implements CSVAttribute{
 
-    private double value;
-    private int binNumber;
+    private String value;
+    private double backUpValue;
+    private int attributIndex;
 
     @Override
     public void setValue(Object value) {
-        this.value = (double) value;
+        this.value = (String) value;
     }
 
     @Override
@@ -16,14 +17,26 @@ public class Continuous implements CSVAttribute{
     }
 
     @Override
-    public void setBinNumber(Object binNumber) {
-        this.binNumber = (int) binNumber;
+    public void setBackUpValue(Object backUpValue) {
+        this.backUpValue = (double) backUpValue;
     }
 
     @Override
-    public Object getBinNumber() {
-        return binNumber;
+    public Object getBackUpValue() {
+        return backUpValue;
     }
+
+
+    @Override
+    public void setAttributIndex(Object attributIndex) {
+        this.attributIndex = (int) attributIndex;
+    }
+
+    @Override
+    public Object getAttributIndex() {
+        return attributIndex;
+    }
+
 
     @Override
     public Object clone() {

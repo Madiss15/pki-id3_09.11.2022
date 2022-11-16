@@ -1,11 +1,9 @@
 package de.uni_trier.wi2.pki.util;
 
+import de.uni_trier.wi2.pki.Main;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Contains methods that help with computing the entropy.
@@ -21,37 +19,43 @@ public class EntropyUtils {
      * @return the information gain for each attribute
      */
     public static List<Double> calcInformationGain(Collection<CSVAttribute[]> matrix, int labelIndex) {
-
+        List<Double> gains = new ArrayList<>();
         List<CSVAttribute[]> matrix1 = (List<CSVAttribute[]>) matrix;
+
+        if(Main.rangeFinder(matrix1,labelIndex).size()==1 || Main.rangeFinder(matrix1,labelIndex).size()==0){
+            return(null);
+        }
+
         //System.out.println("Enter labelIndex you want to predict (counting starts at 0)");
         //Scanner sc = new Scanner(System.in);
         //labelIndex = sc.nextInt();
-        System.out.println("Label index " + labelIndex);
-        List<String> range = rangeFinder(matrix1, labelIndex);
+        System.out.println("Label index: "+ Main.getIndexName((int) matrix1.get(0)[labelIndex].getAttributIndex()));
+        List<String> range = Main.rangeFinder(matrix1, labelIndex);
         double he = he(matrix1, labelIndex, range);
         System.out.println("H(E) = " + he);
 
-        double[] gains = new double[matrix1.get(0).length];
         int indexWithBiggestGain =0;
+        int skipper = 0;
         for (int i = 0; i < matrix1.get(0).length; i++) {
             if (!(i == labelIndex)) {
-                gains[i] = he - gain(matrix1, i, labelIndex);
-                System.out.println("Gain: " + gains[i]);
-                if(gains[indexWithBiggestGain]<gains[i])
+                gains.add(he - gain(matrix1, i, labelIndex));
+                System.out.println("Gain: " + gains.get(i+skipper));
+                if(gains.get(indexWithBiggestGain)<gains.get(i+skipper)) {
                     indexWithBiggestGain = i;
+                }
             }
         }
-        System.out.println("Index of Attribute with biggest gain of Information: "+(int)indexWithBiggestGain);
-        return null;
+        System.out.println("Index of Attribute with biggest gain of Information: "+indexWithBiggestGain);
+        return gains;
     }
 
     private static double gain(List<CSVAttribute[]> matrix1, int labelIndexG, int labelIndex) {
-        List<String> range = rangeFinder(matrix1, labelIndex);
+        List<String> range = Main.rangeFinder(matrix1, labelIndex);
         int[] rangeCounter = rangeCounter(matrix1, range, labelIndex);
         double gain = 0;
-        List<String> rangeG = rangeFinder(matrix1, labelIndexG);
+        List<String> rangeG = Main.rangeFinder(matrix1, labelIndexG);
         int[] rangeCounterG = rangeCounter(matrix1, rangeG, labelIndexG);
-        System.out.println(rangeG);
+        System.out.println(rangeG+" "+Main.getIndexName((int) matrix1.get(0)[labelIndexG].getAttributIndex()));
         for (int a : rangeCounterG)
             System.out.print(a + "  ");
         System.out.println();
@@ -64,26 +68,17 @@ public class EntropyUtils {
                         counter++;
                     }
                 }
-                System.out.println("Value: " + rangeG.get(k) + ", AimValue: " + range.get(i) + ", corresponding Lines: " +(int) counter);
+                //System.out.println("Value: " + rangeG.get(k) + ", AimValue: " + range.get(i) + ", corresponding Lines: " +(int) counter);
                 if (counter != 0) {
                     double a = -(double) counter / rangeCounterG[k];
                     double b = (double) log2(counter / (double) rangeCounterG[k]);
                     he = he + a * b;
                 }
             }
-            System.out.println("H("+rangeG.get(k)+"): "+he);
+            //System.out.println("H("+rangeG.get(k)+"): "+he);
             gain = gain + ((double) rangeCounterG[k] / matrix1.size()) * he;
         }
         return gain;
-    }
-
-    private static List rangeFinder(List<CSVAttribute[]> matrix1, int labelIndex) {
-        List range = new LinkedList();
-        for (int i = 0; i < matrix1.size(); i++)
-            if (!range.contains(matrix1.get(i)[labelIndex].getValue()))
-                range.add(matrix1.get(i)[labelIndex].getValue());
-
-        return range;
     }
 
     public static int[] rangeCounter(List<CSVAttribute[]> matrix1, List range, int labelIndex) {
