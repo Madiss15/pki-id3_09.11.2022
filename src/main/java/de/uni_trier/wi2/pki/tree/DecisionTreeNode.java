@@ -20,6 +20,30 @@ public class DecisionTreeNode {
     /**
      * The checked split condition values and the nodes for these conditions.
      */
-    HashMap<String, DecisionTreeNode> splits;
+    HashMap<String, DecisionTreeNode> splits = new HashMap<>();
 
+    public void setParent(DecisionTreeNode d){
+        parent = d;
+    }
+
+    public DecisionTreeNode getParent(){
+        return parent;
+    }
+
+    public void setAttributeIndex(int a){
+        attributeIndex = a;
+    }
+
+    public int getAttributeIndex(){
+        return attributeIndex;
+    }
+
+    public void  setSplits(String s, DecisionTreeNode d){
+        splits.put(s, d);
+    }
+
+    public HashMap getSplits(){
+        return splits;
+    }
 }
+

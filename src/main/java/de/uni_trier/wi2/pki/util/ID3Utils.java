@@ -4,6 +4,7 @@ import de.uni_trier.wi2.pki.Main;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -21,36 +22,50 @@ public class ID3Utils {
      * @param labelIndex The label of the attribute that should be used as an index.
      * @return The root node of the decision tree
      */
+
+    public static DecisionTreeNode mainRoot;
+    public static boolean rootIsSet = false;
+
     public static DecisionTreeNode createTree(Collection<CSVAttribute[]> examples, int labelIndex) {
-
-
         DecisionTreeNode root = new DecisionTreeNode();
-
+        if (rootIsSet)
+            root.setParent(mainRoot);
+        else {
+            root.setParent(root);
+            mainRoot = root;
+            rootIsSet = true;
+        }
         EntropyUtils entropyUtils = new EntropyUtils();
         List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples;
 
         if (Main.rangeFinder(attributes, labelIndex).size() <= 1) {
             System.out.println("Ultimate value: " + attributes.get(0)[labelIndex].getValue());
-            return (null);
+            root.setAttributeIndex((int) attributes.get(0)[labelIndex].getAttributIndex());
+            root.setSplits((String) attributes.get(0)[labelIndex].getValue(), null);
+            return root;
         }
 
         List<CSVAttribute[]> attributesRek = new LinkedList<CSVAttribute[]>();
         List<Double> outcome = entropyUtils.calcInformationGain(examples, labelIndex);
+
         int bestIndex = 0;
         for (int k = 0; k < outcome.size(); k++) {
-                if (outcome.get(k) > outcome.get(bestIndex)) {
-                    bestIndex = k;
-
+            if (outcome.get(k) > outcome.get(bestIndex)) {
+                bestIndex = k;
             }
         }
-        if(outcome.size()==0||outcome.get(bestIndex)==0){
+        root.setAttributeIndex((int) attributes.get(0)[bestIndex].getAttributIndex());
+
+        if (outcome.size() == 0 || outcome.get(bestIndex) == 0) {
             System.out.println("!No Gain here!");
-            return null;
+            root.setSplits("Dead End", null);
+            root.setAttributeIndex(-1);
+            return root;
         }
         List<String> range = Main.rangeFinder(attributes, bestIndex);
-        System.out.println(range+" "+Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
+        System.out.println(range + " " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
         for (int k = 0; k < range.size(); k++) {
-            System.out.println("#Zweig: " + range.get(k) + "# "+Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
+            System.out.println("#Zweig: " + range.get(k) + "# " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
             for (int i = 0; i < attributes.size(); i++) {
                 if (attributes.get(i)[bestIndex].getValue().equals(range.get(k))) {
                     ArrayList<CSVAttribute> test = new ArrayList<>();
@@ -64,13 +79,9 @@ public class ID3Utils {
                     attributesRek.add(test.toArray(new CSVAttribute[0]));
                 }
             }
-            if (bestIndex>labelIndex)
-                createTree(attributesRek, labelIndex);
-            else
-                createTree(attributesRek, labelIndex - 1);
-
+            root.setSplits(range.get(k), createTree(attributesRek, labelIndex - 1));
             attributesRek = new LinkedList<CSVAttribute[]>();
         }
-        return null;
+        return root;
     }
 }

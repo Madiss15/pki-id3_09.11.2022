@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DescisionTree>
+    <Node attribute="Wetter">
+        <IF value="Rain">
+            <Node attribute="Wind">
+                <IF value="Weak">
+                    <Node attribute="Result"/>
+                </IF>
+                <IF value="Strong">
+                    <Node attribute="Result"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="Overcast">
+            <Node attribute="Result"/>
+        </IF>
+        <IF value="Sunny">
+            <Node attribute="UV">
+                <IF value="High">
+                    <Node attribute="Result"/>
+                </IF>
+                <IF value="Normal">
+                    <Node attribute="Result"/>
+                </IF>
+            </Node>
+        </IF>
+    </Node>
+</DescisionTree>

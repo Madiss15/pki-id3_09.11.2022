@@ -1,6 +1,7 @@
 package de.uni_trier.wi2.pki;
 
 import de.uni_trier.wi2.pki.io.CSVReader;
+import de.uni_trier.wi2.pki.io.XMLWriter;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.io.attr.Categorical;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
@@ -11,16 +12,20 @@ import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 import de.uni_trier.wi2.pki.util.EntropyUtils;
 import de.uni_trier.wi2.pki.util.ID3Utils;
 
+import javax.xml.transform.sax.SAXSource;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 
 public class Main {
+    static String xmlPath = "src/main/resources/ATest.xml";
     static int numberOfBins = 5;
-    static int labelIndex = 7;
+    static int labelIndex = 4;
     static List<String[]> content = new ArrayList<>();
-    static boolean testIfDiscrete = false;      // false -> es wird nur auf categorical und continuous getestet
+    static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
     //potenzielle bereits diskrete Attribute werden nicht genutzt
 
     public static int[] type; //Falls es eine Spalte gibt, in der nur ganze Zahlen abgespeichert werden,
@@ -32,9 +37,9 @@ public class Main {
 
     public static void main(String[] args) {
         if (ignoreHead)
-            skippFirstLine = 5;
+            skippFirstLine = 1;
 
-        content = CSVReader.readCsvToArray("src/main/resources/churn_data.csv", ";", ignoreHead);
+        content = CSVReader.readCsvToArray("src/main/resources/Weather.csv", ";", ignoreHead);
         type = new int[content.get(0).length];
         typeTester(content);
         List<CSVAttribute[]> attributes = attributeListConverter(content);
@@ -50,8 +55,21 @@ public class Main {
         }
         Formater formater = new Formater();  // Der Code funktioniert nur, wenn der Labelindex am Ende CSV-Datei ist, folglich muss er in allen anderen Fällen ans Ende verschoben werden
         List<CSVAttribute[]> formatedAtributes = formater.format(attributes, labelIndex);
+
+
+        HashMap<String, String> a = new HashMap<>();
+
         ID3Utils utils = new ID3Utils();
         DecisionTreeNode root = utils.createTree(formatedAtributes, formatedAtributes.get(0).length - 1);
+        System.out.println("##################################");
+        System.out.println("Saved at: "+xmlPath);
+        XMLWriter writer = new XMLWriter();
+        try {
+            writer.writeXML(xmlPath,root);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // TODO: this should be the main executable method for your project
     }
 
@@ -114,6 +132,8 @@ public class Main {
     }
 
     public static String getIndexName(int a) {
+        if(a == -1)
+            return ("Dead Ennd");
         return (content.get(0)[a]);
     }
 
@@ -125,5 +145,4 @@ public class Main {
 
         return range;
     }
-
 }
