@@ -4,23 +4,23 @@
         <IF value="Rain">
             <Node attribute="Wind">
                 <IF value="Weak">
-                    <Node attribute="Result"/>
+                    <LeafNode class="1"/>
                 </IF>
                 <IF value="Strong">
-                    <Node attribute="Result"/>
+                    <LeafNode class="0"/>
                 </IF>
             </Node>
         </IF>
         <IF value="Overcast">
-            <Node attribute="Result"/>
+            <LeafNode class="1"/>
         </IF>
         <IF value="Sunny">
             <Node attribute="UV">
                 <IF value="High">
-                    <Node attribute="Result"/>
+                    <LeafNode class="0"/>
                 </IF>
                 <IF value="Normal">
-                    <Node attribute="Result"/>
+                    <LeafNode class="1"/>
                 </IF>
             </Node>
         </IF>

@@ -72,7 +72,12 @@ public class XMLWriter {
             if (child == null) {
                 return;
             }
-            c.setAttribute("attribute", Main.getIndexName(child.getAttributeIndex()));
+            if (child.getSplits().size() == 1) {
+                System.out.println("Test");
+                c = doc.createElement("LeafNode");
+                c.setAttribute("class", "" + child.getSplits().keySet().toArray()[0]);
+            } else
+                c.setAttribute("attribute", Main.getIndexName(child.getAttributeIndex()));
             Element node = doc.createElement("IF");
             a.appendChild(node);
             Attr attributeName = doc.createAttribute("value");

@@ -133,7 +133,7 @@ public class Main {
 
     public static String getIndexName(int a) {
         if(a == -1)
-            return ("Dead Ennd");
+            return ("Dead End");
         return (content.get(0)[a]);
     }
 
