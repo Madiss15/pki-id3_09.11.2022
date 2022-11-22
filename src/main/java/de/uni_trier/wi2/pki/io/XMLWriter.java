@@ -72,10 +72,6 @@ public class XMLWriter {
             if (child == null) {
                 return;
             }
-            if (!child.getSplits().containsValue(child.getSplits().keySet().toArray()[0])){
-                c = doc.createElement(classTitle);
-                System.out.println("Treffer");
-            }
             c.setAttribute("attribute", Main.getIndexName(child.getAttributeIndex()));
             Element node = doc.createElement("IF");
             a.appendChild(node);
