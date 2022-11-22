@@ -73,7 +73,6 @@ public class XMLWriter {
                 return;
             }
             if (child.getSplits().size() == 1) {
-                System.out.println("Test");
                 c = doc.createElement("LeafNode");
                 c.setAttribute("class", "" + child.getSplits().keySet().toArray()[0]);
             } else
