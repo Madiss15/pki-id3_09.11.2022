@@ -7,7 +7,14 @@
                     <LeafNode class="1"/>
                 </IF>
                 <IF value="Strong">
-                    <LeafNode class="0"/>
+                    <Node attribute="Temperatur">
+                        <IF value="Mild">
+                            <Node attribute="Dead End"/>
+                        </IF>
+                        <IF value="Cool">
+                            <LeafNode class="0"/>
+                        </IF>
+                    </Node>
                 </IF>
             </Node>
         </IF>

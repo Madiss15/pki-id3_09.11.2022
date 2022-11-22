@@ -21,9 +21,9 @@ import java.util.List;
 
 
 public class Main {
-    static String xmlPath = "src/main/resources/ATest.xml";
+    static String xmlPath = "src/main/resources/A1Test.xml";
     static int numberOfBins = 5;
-    static int labelIndex = 4;
+    static int labelIndex = 3;
     static List<String[]> content = new ArrayList<>();
     static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
     //potenzielle bereits diskrete Attribute werden nicht genutzt
@@ -33,13 +33,13 @@ public class Main {
     //0=categorical 1=continuous 2=discrete
 
     static boolean ignoreHead = false;
-    static int skippFirstLine = 1; //Dieser Wert muss 1 sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen.
+    static int skippFirstLine = 0; //Dieser Wert muss 1 sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen.
 
     public static void main(String[] args) {
         if (ignoreHead)
             skippFirstLine = 1;
 
-        content = CSVReader.readCsvToArray("src/main/resources/Weather.csv", ";", ignoreHead);
+        content = CSVReader.readCsvToArray("src/main/resources/vorlesung.csv", ";", ignoreHead);
         type = new int[content.get(0).length];
         typeTester(content);
         List<CSVAttribute[]> attributes = attributeListConverter(content);
@@ -132,6 +132,11 @@ public class Main {
     }
 
     public static String getIndexName(int a) {
+        if(skippFirstLine==0){
+            if(a == -1)
+                return ("Dead End");
+            return "Index "+a;
+        }
         if(a == -1)
             return ("Dead End");
         return (content.get(0)[a]);
