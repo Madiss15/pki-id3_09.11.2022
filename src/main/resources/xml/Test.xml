@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DescisionTree>
+    <Node attribute="CreditScore">
+        <IF value="1">
+            <Node attribute="Balance">
+                <IF value="1">
+                    <LeafNode class="3"/>
+                </IF>
+                <IF value="2">
+                    <LeafNode class="3"/>
+                </IF>
+                <IF value="4">
+                    <LeafNode class="5"/>
+                </IF>
+                <IF value="5">
+                    <LeafNode class="2"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="2">
+            <Node attribute="Age">
+                <IF value="1">
+                    <LeafNode class="3"/>
+                </IF>
+                <IF value="2">
+                    <LeafNode class="2"/>
+                </IF>
+                <IF value="4">
+                    <LeafNode class="4"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="3">
+            <Node attribute="Age">
+                <IF value="2">
+                    <LeafNode class="4"/>
+                </IF>
+                <IF value="3">
+                    <LeafNode class="1"/>
+                </IF>
+                <IF value="4">
+                    <LeafNode class="4"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="4">
+            <Node attribute="Geography">
+                <IF value="France">
+                    <LeafNode class="2"/>
+                </IF>
+                <IF value="Spain">
+                    <LeafNode class="5"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="5">
+            <LeafNode class="1"/>
+        </IF>
+    </Node>
+</DescisionTree>

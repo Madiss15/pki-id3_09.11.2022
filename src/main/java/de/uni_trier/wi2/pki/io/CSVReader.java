@@ -33,15 +33,17 @@ public class CSVReader {
             while ((currentLine=reader.readLine()) !=null){
                 readDate.add(currentLine.split(delimiter));
                 rows++;
-            //    System.out.println(currentLine);
             }
         } catch (FileNotFoundException e) {
             System.out.println("No file found");
             return null;
         } catch (IOException e) {
+            System.out.println("File seems corrupted");
             e.printStackTrace();
         }
-        System.out.println(rows+" Zeilen gelesen");
+        System.out.println("------------------------------");
+        System.out.println(rows+" Lines read");
+        System.out.println("------------------------------");
         return readDate;
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Formater {
 
-    public List<CSVAttribute[]> format(List<CSVAttribute[]> attributes, int labelIndex) {
+    public static List<CSVAttribute[]> format(List<CSVAttribute[]> attributes, int labelIndex) {
         if (attributes.get(0).length == labelIndex - 1) {
             return attributes;
         } else {

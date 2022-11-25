@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DescisionTree>
+    <Node attribute="CreditScore">
+        <IF value="4">
+            <LeafNode class="5"/>
+        </IF>
+        <IF value="6">
+            <Node attribute="Tenure">
+                <IF value="2">
+                    <LeafNode class="0"/>
+                </IF>
+                <IF value="3">
+                    <LeafNode class="0"/>
+                </IF>
+                <IF value="4">
+                    <LeafNode class="0"/>
+                </IF>
+                <IF value="5">
+                    <LeafNode class="5"/>
+                </IF>
+                <IF value="6">
+                    <LeafNode class="0"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="7">
+            <Node attribute="Age">
+                <IF value="7">
+                    <Node attribute="Dead End"/>
+                </IF>
+                <IF value="8">
+                    <LeafNode class="0"/>
+                </IF>
+                <IF value="9">
+                    <LeafNode class="5"/>
+                </IF>
+            </Node>
+        </IF>
+        <IF value="8">
+            <LeafNode class="0"/>
+        </IF>
+        <IF value="9">
+            <LeafNode class="0"/>
+        </IF>
+    </Node>
+</DescisionTree>

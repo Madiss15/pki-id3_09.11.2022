@@ -14,79 +14,88 @@ import de.uni_trier.wi2.pki.util.ID3Utils;
 
 import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.Writer;
+import java.util.*;
 
+//Alle Einstellungen zur Nutzung werden in Settings festgelegt
 
 public class Main {
-    static String xmlPath = "src/main/resources/A1Test.xml";
-    static int numberOfBins = 5;
-    static int labelIndex = 3;
-    static List<String[]> content = new ArrayList<>();
-    static boolean testIfDiscrete = true;      // false -> es wird nur auf categorical und continuous getestet
-    //potenzielle bereits diskrete Attribute werden nicht genutzt
 
-    public static int[] type; //Falls es eine Spalte gibt, in der nur ganze Zahlen abgespeichert werden,
-    //können diese bereits als diskret vermerkt werden.
-    //0=categorical 1=continuous 2=discrete
+    static int labelIndex = Settings.getLabelIndex();                 //Das Ergebnis dieser Spalte soll prognostiziert werden
 
-    static boolean ignoreHead = false;
-    static int skippFirstLine = 0; //Dieser Wert muss 1 sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen.
+    static String xmlPath = Settings.getXmlPath();                    //Ort der generierten XML-Datei
+    static String sourcePath = Settings.getSourcePath();              //Ort der zu untersuchenden CSV-Datei
+
+    static boolean testIfDiscrete = Settings.isTestIfDiscrete();      //true: Potenzielle bereits diskrete Attribute werden erfasst (Es wird erfasst, ob in einer Spalte nur ganze Zahlen stehen), false: Es wird nur auf kategorische und kontinuierliche Werte getestet
+    static boolean ignoreHead = Settings.isIgnoreHead();              //Dieser Wert soll false sein, wenn in der ersten Zeile die Attributenbezeichnungen stehen
+    static String delimiter = Settings.getDelimiter();                //Das Trennzeichen in der CSV-Datei
+
+    static int numberOfBins = Settings.getNumberOfBins();             //Anzahl der Bins
+    static boolean individualBins = Settings.isIndividualBins();      //true: es wird für jede Spalte eine individuelle Anzahl von Bins angefordert, false: es wird immer numberOfBins angewendet
+
+    static List<String[]> content = new ArrayList<>();                 //Eine List von Strings, in der die gelesene CSV-Datei gespeichert wird
+    static List<CSVAttribute[]> attributes;                            //Eine Liste von CSV-Attributen, die durch Konvertierung von content entsteht
+    static int skippFirstLine = 0;                                     //ignoreHead: false bedeutet, dass in der ersten Zeile Attributenbezeichnungen und noch keine echten Werte stehen, folglich wird muss im weiteren Verlauf die erste Zeile übersprungen werden
+    static int[] type;                                                 //Hier wird der Attributstyp der jeweiligen Spalte festgelegt (1: Continuous, 0: Categorical, 2: Discrete)
+    static Scanner sc = new Scanner(System.in);                        //Wird benötigt für die individuelle Anzahl von Bins
+
+    static DecisionTreeNode root;                                      //Wurzelknoten
 
     public static void main(String[] args) {
-        if (ignoreHead)
+        if (!ignoreHead)    //Entscheiden, ob die erste Zeile übersprungen werden muss
             skippFirstLine = 1;
-
-        content = CSVReader.readCsvToArray("src/main/resources/vorlesung.csv", ";", ignoreHead);
+        content = CSVReader.readCsvToArray(sourcePath, delimiter, ignoreHead);  //Lesen der CSV
+        if(labelIndex>content.get(0).length) {      //Testen auf validen Labelindex
+            labelIndex = content.get(0).length - 1;
+            System.out.println("Label index is out of range. I proceed with last label Index: "+(content.get(0).length - 1));
+            System.out.println("------------------------------");
+        }
         type = new int[content.get(0).length];
-        typeTester(content);
-        List<CSVAttribute[]> attributes = attributeListConverter(content);
-        for (int k = 0; k < attributes.get(skippFirstLine).length; k++) {
+        typeTester(content);    //Der Attributstyp der jeweiligen Spalte wird festgelegt
+        attributes = attributeListConverter(content);   // Konvertierung zu Objekten
+        for (int k = 0; k < attributes.get(skippFirstLine).length; k++) {   //Ausgeben der Typen
             System.out.println(content.get(0)[k] + " is " + attributes.get(0)[k].getClass().getSimpleName());
         }
+        System.out.println("------------------------------");
 
-        BinningDiscretizer discretizer = new BinningDiscretizer();
-        for (int i = 0; i < type.length; i++) {
-            if (type[i] == 1) {
-                attributes = discretizer.discretize(numberOfBins, attributes, i);
+        for (int i = 0; i < type.length; i++) { //Diskretisierung aller Spalten, die kontinuierlich sind ggf. mit individueller Anzahl von Bins
+            if (individualBins) {
+                if (type[i] == 1) {
+                    System.out.println("------------------------------");
+                    System.out.println("Bin Number of " + getIndexName(i) + " " + rangeFinder(attributes, i) + ":");
+                    attributes = BinningDiscretizer.discretize(sc.nextInt(), attributes, i);
+                }
+            } else {
+                if (type[i] == 1) {
+                    attributes = BinningDiscretizer.discretize(numberOfBins, attributes, i);
+                }
             }
         }
-        Formater formater = new Formater();  // Der Code funktioniert nur, wenn der Labelindex am Ende CSV-Datei ist, folglich muss er in allen anderen Fällen ans Ende verschoben werden
-        List<CSVAttribute[]> formatedAtributes = formater.format(attributes, labelIndex);
+        if (labelIndex != attributes.get(0).length - 1)   //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+            attributes = Formater.format(attributes, labelIndex);
+        root = ID3Utils.createTree(attributes, attributes.get(0).length - 1);  //Erstellung des Baumes
 
-
-        HashMap<String, String> a = new HashMap<>();
-
-        ID3Utils utils = new ID3Utils();
-        DecisionTreeNode root = utils.createTree(formatedAtributes, formatedAtributes.get(0).length - 1);
-        System.out.println("##################################");
-        System.out.println("Saved at: "+xmlPath);
-        XMLWriter writer = new XMLWriter();
         try {
-            writer.writeXML(xmlPath,root);
+            XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // TODO: this should be the main executable method for your project
+        System.out.println("############################################");
+        System.out.println("Saved at: " + xmlPath);
     }
 
-    public static List<CSVAttribute[]> attributeListConverter(List<String[]> list) {
-        List<CSVAttribute[]> attribute = new LinkedList<>();
-        for (int i = skippFirstLine; i < list.size(); i++) {
-            CSVAttribute[] number = attributeLineConverter(list.get(i));
-            attribute.add(number);
+    public static List<CSVAttribute[]> attributeListConverter(List<String[]> content) {    //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Fügt die Zeilen zusammen)
+        List<CSVAttribute[]> attributes = new LinkedList<>();
+        for (int i = skippFirstLine; i < content.size(); i++) {
+            CSVAttribute[] number = attributeLineConverter(content.get(i));
+            attributes.add(number);
         }
-        return attribute;
+        return attributes;
     }
 
-    public static CSVAttribute[] attributeLineConverter(String[] line) {
-        int length = line.length;
-        CSVAttribute[] attributeLine = new CSVAttribute[length];
-        for (int i = 0; i < length; i++) {
-            Object value;
+    public static CSVAttribute[] attributeLineConverter(String[] line) {        //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Zeile für Zeile)
+        CSVAttribute[] attributeLine = new CSVAttribute[line.length];
+        for (int i = 0; i < line.length; i++) {
             CSVAttribute a;
             if (type[i] == 0) {
                 a = new Categorical();
@@ -109,40 +118,37 @@ public class Main {
         return attributeLine;
     }
 
-    public static void typeTester(List<String[]> content) {
+    public static void typeTester(List<String[]> content) {         //Ordnet den Spalten einen Typ in type zu
         for (int k = 0; k < content.get(0).length; k++) {
             for (int i = skippFirstLine; i < content.size(); i++) {
                 try {
                     double value = Double.parseDouble(content.get(i)[k]);
                     if (value != (int) value) {
-                        type[k] = 1;
+                        type[k] = 1;      // 1: Continuous
                         break;
                     }
                 } catch (Exception e) {
-                    type[k] = 0;
+                    type[k] = 0;         // 0: Categorical
                     break;
                 }
-                if (testIfDiscrete) {
-                    type[k] = 2;
-                } else {
+                if (testIfDiscrete)
+                    type[k] = 2;         // 2: Discrete
+                else
                     type[k] = 1;
-                }
             }
         }
     }
 
-    public static String getIndexName(int a) {
-        if(skippFirstLine==0){
-            if(a == -1)
-                return ("Dead End");
-            return "Index "+a;
-        }
-        if(a == -1)
+    public static String getIndexName(int labelIndex) { //ignoreHead false: Es wird die Attributenbezeichnung der Spalte labelIndex zurückgegeben
+        if (ignoreHead)
+            return ("Index " + labelIndex);
+        if (labelIndex == -1)
             return ("Dead End");
-        return (content.get(0)[a]);
+
+        return (content.get(0)[labelIndex]);
     }
 
-    public static List rangeFinder(List<CSVAttribute[]> matrix1, int labelIndex) {
+    public static List rangeFinder(List<CSVAttribute[]> matrix1, int labelIndex) { //Liefert die unterschiedlichen Werte, die das Attribut an der Stelle labelIndex annimmt (kann beim Binning hilfreich sein)
         List range = new LinkedList();
         for (int i = 0; i < matrix1.size(); i++)
             if (!range.contains(matrix1.get(i)[labelIndex].getValue()))

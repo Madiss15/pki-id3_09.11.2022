@@ -14,3 +14,4 @@ CreditScore;Geography;Gender;Age;Tenure;Balance;NumOfProducts;HasCrCard;IsActive
 476;France;Female;34;10;0.0;2;1;0;26260.98;0
 549;France;Female;25;5;0.0;2;0;0;190857.79;0
 635;Spain;Female;35;7;0.0;2;1;1;65951.65;0
+635;Spain;Female;35;7;0.0;2;1;1;65951.65;1
