@@ -19,9 +19,7 @@ public class CrossValidator {
      * @param trainFunction  the function to train the model with.
      * @param numFolds       the number of data folds.
      */
-    public static DecisionTreeNode performCrossValidation(List<CSVAttribute[]> dataset, int labelAttribute,
-                                                          BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction,
-                                                          int numFolds) {
+    public static DecisionTreeNode performCrossValidation(List<CSVAttribute[]> dataset, int labelAttribute, BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction, int numFolds) {
         return null;
     }
 

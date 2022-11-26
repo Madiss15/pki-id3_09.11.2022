@@ -52,8 +52,8 @@ public class XMLWriter {
         a.setAttribute("attribute", Main.getIndexName(decisionTree.getAttributeIndex()));
 
         rootElement.appendChild(a);
+        testIfSameNode(decisionTree);
         rek(decisionTree, a, doc);
-
         try (FileOutputStream output = new FileOutputStream(path)) {
             writeXml(doc, output);
         } catch (IOException e) {
@@ -72,7 +72,7 @@ public class XMLWriter {
             if (child == null) {
                 return;
             }
-            if (child.getSplits().size() == 1 && child.getAttributeIndex()!=-1) {
+            if (child.getSplits().size() == 1) {
                 c = doc.createElement("LeafNode");
                 c.setAttribute("class", "" + child.getSplits().keySet().toArray()[0]);
             } else
@@ -85,6 +85,29 @@ public class XMLWriter {
             node.appendChild(c);
             rek(child, c, doc);
         }
+    }
+
+    private static String testIfSameNode(DecisionTreeNode decisionTree) {
+        HashMap<String, DecisionTreeNode> map = decisionTree.getSplits();
+        int counter = 0;
+        boolean same = true;
+        String[] leave = new String[map.size()];
+        for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
+            String b = test.getKey();
+            DecisionTreeNode child = test.getValue();
+            if (child == null)
+                return b;
+            leave[counter] = testIfSameNode(child);
+            counter++;
+        }
+        if (leave[0] != null) {
+            for (String a : leave)
+                if (!leave[0].equals(a))
+                    same = false;
+            if (same)
+                decisionTree.resetSplits(leave[0], null);
+        }
+        return null;
     }
 
     private static void writeXml(Document doc, OutputStream output) throws TransformerException {

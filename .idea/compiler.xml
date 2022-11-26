@@ -7,11 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="pki-id3_1444" />
-        <module name="pki-id3_09.11.2022" />
-        <module name="pki-id3_05.11.2022" />
+        <module name="pki_projekt-26.11.2022" />
         <module name="pki-id3_07.11.2022" />
         <module name="pki_projekt-16.11.2022" />
         <module name="pki-id3" />
+        <module name="pki-id3_09.11.2022" />
+        <module name="pki-id3_05.11.2022" />
       </profile>
     </annotationProcessing>
   </component>

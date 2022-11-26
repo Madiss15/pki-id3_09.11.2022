@@ -1,5 +1,7 @@
 package de.uni_trier.wi2.pki.io;
 
+import de.uni_trier.wi2.pki.Main;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -29,7 +31,7 @@ public class CSVReader {
             BufferedReader reader = new BufferedReader(new FileReader(relativePath));
             String currentLine = "";
             if(ignoreHeader)
-                reader.readLine();
+                Main.setAttributeName(reader.readLine().split(delimiter));    //Die Attributbezeichnungen werden gespeichert, wenn ignore ignoreHeader true
             while ((currentLine=reader.readLine()) !=null){
                 readDate.add(currentLine.split(delimiter));
                 rows++;
