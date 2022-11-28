@@ -5,7 +5,7 @@ public class Settings {
 
     static int labelIndex = 0;                  //Das Ergebnis dieser Spalte soll prognostiziert werden
 
-    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smaller.csv"; //Ort der zu untersuchenden CSV-Datei
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015.csv"; //Ort der zu untersuchenden CSV-Datei
     static String xmlPath = "src/main/resources/xml/FullRun1.xml";     //Ort der generierten XML-Datei
 
     static boolean ignoreHead = true;          //Dieser Wert soll true sein, wenn in der ersten Zeile die Attributbezeichnungen stehen
