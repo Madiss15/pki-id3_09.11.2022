@@ -44,6 +44,7 @@ public class Main {
     static String[] attributeName;                                     //Speichert ggf. die Attributbezeichnungen
 
     static DecisionTreeNode root;                                      //Wurzelknoten
+    static int numFolds = Settings.getNumFolds();
 
     public static void main(String[] args) {
 
@@ -80,24 +81,27 @@ public class Main {
         long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
         System.out.println(totalTime / 1000000 + " ms");
-        //sc.nextInt();
         List<CSVAttribute[]> FormatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
-        root = ID3Utils.createTree(FormatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
+
+        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = (data, labelAttribute) -> {
+            return ID3Utils.createTree(data, labelAttribute);
+        };
+        CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);
+
+        /*root = ID3Utils.createTree(FormatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
+
 
         try {
             XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         System.out.println("------------------------------");
-
-        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> function = (x1, x2) -> new DecisionTreeNode();
-
-        DecisionTreeNode node = CrossValidator.performCrossValidation(FormatedAttributes, labelIndex, function, 4);
-
         System.out.println("##############################");
         System.out.println("Saved at: " + xmlPath);
         System.out.println(Tester.test(attributes, root, labelIndex));
+*/
         endTime = System.nanoTime();
         totalTime = endTime - startTime;
         System.out.println(totalTime / 1000000 + " ms");
