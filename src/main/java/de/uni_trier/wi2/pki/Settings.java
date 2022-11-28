@@ -2,10 +2,11 @@ package de.uni_trier.wi2.pki;
 
 public class Settings {
 
+
     static int labelIndex = 0;                  //Das Ergebnis dieser Spalte soll prognostiziert werden
 
     static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smaller.csv"; //Ort der zu untersuchenden CSV-Datei
-    static String xmlPath = "src/main/resources/xml/test1.xml";     //Ort der generierten XML-Datei
+    static String xmlPath = "src/main/resources/xml/FullRun1.xml";     //Ort der generierten XML-Datei
 
     static boolean ignoreHead = true;          //Dieser Wert soll true sein, wenn in der ersten Zeile die Attributbezeichnungen stehen
     static String delimiter = ",";             //Das Trennzeichen in der CSV-Datei
@@ -14,6 +15,10 @@ public class Settings {
     static int numberOfBins = 5;                //Anzahl der Bins, es wird ab 1 gezählt
     static boolean binningProcedure = true;     //true: Gleiche Intervallgröße, false: gleiche Punkteanzahl pro Intervall
     static boolean individualBins = false;      //true: Es wird für jede Spalte eine individuelle Anzahl von Bins angefordert, false: es wird immer numberOfBins angewendet
+
+    public static void setLabelIndex(int labelIndex) {
+        Settings.labelIndex = labelIndex;
+    }
 
     public static String getDelimiter() {
         return delimiter;

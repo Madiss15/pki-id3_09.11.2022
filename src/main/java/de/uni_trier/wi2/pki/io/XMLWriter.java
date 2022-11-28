@@ -1,6 +1,7 @@
 package de.uni_trier.wi2.pki.io;
 
 import de.uni_trier.wi2.pki.Main;
+import de.uni_trier.wi2.pki.Settings;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -45,7 +46,7 @@ public class XMLWriter {
 
 
         Document doc = docBuilder.newDocument();
-        Element rootElement = doc.createElement("DescisionTree");
+        Element rootElement = doc.createElement("DecisionTree");
         doc.appendChild(rootElement);
 
         Element a = doc.createElement(classTitle);
@@ -104,8 +105,11 @@ public class XMLWriter {
             for (String a : leave)
                 if (!leave[0].equals(a))
                     same = false;
-            if (same)
+            if (same) {
+
                 decisionTree.resetSplits(leave[0], null);
+                decisionTree.setAttributeIndex(Settings.getLabelIndex());
+            }
         }
         return null;
     }

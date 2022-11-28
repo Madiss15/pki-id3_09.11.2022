@@ -7,6 +7,7 @@ import de.uni_trier.wi2.pki.io.attr.Categorical;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
 import de.uni_trier.wi2.pki.io.attr.Discrete;
 import de.uni_trier.wi2.pki.postprocess.CrossValidator;
+import de.uni_trier.wi2.pki.postprocess.Tester;
 import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
 import de.uni_trier.wi2.pki.preprocess.Formater;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
@@ -37,6 +38,7 @@ public class Main {
 
     static List<String[]> content = new ArrayList<>();                 //Eine List von Strings, in der die gelesene CSV-Datei gespeichert wird
     static List<CSVAttribute[]> attributes;                            //Eine Liste von CSV-Attributen, die durch Konvertierung von content entsteht
+
     static int[] type;                                                 //Hier wird der Attributstyp der jeweiligen Spalte festgelegt (1: Continuous, 0: Categorical, 2: Discrete)
     static Scanner sc = new Scanner(System.in);                        //Wird benötigt für die individuelle Anzahl von Bins
     static String[] attributeName;                                     //Speichert ggf. die Attributbezeichnungen
@@ -45,9 +47,12 @@ public class Main {
 
     public static void main(String[] args) {
 
+        long startTime = System.nanoTime();
+
         content = CSVReader.readCsvToArray(sourcePath, delimiter, ignoreHead);  //Lesen der CSV
-        if (labelIndex > content.get(0).length-1) {      //Testen auf validen Labelindex
+        if (labelIndex > content.get(0).length - 1) {      //Testen auf validen Labelindex
             labelIndex = content.get(0).length - 1;
+            Settings.setLabelIndex(labelIndex);
             System.out.println("Label index is out of range. I proceed with last label Index: " + (content.get(0).length - 1));
             System.out.println("------------------------------");
         }
@@ -72,9 +77,12 @@ public class Main {
                 }
             }
         }
-
-        attributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
-        root = ID3Utils.createTree(attributes, attributes.get(0).length - 1);  //Erstellung des Baumes
+        long endTime = System.nanoTime();
+        long totalTime = endTime - startTime;
+        System.out.println(totalTime / 1000000 + " ms");
+        //sc.nextInt();
+        List<CSVAttribute[]> FormatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+        root = ID3Utils.createTree(FormatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
 
         try {
             XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
@@ -83,12 +91,16 @@ public class Main {
         }
         System.out.println("------------------------------");
 
-        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> function = (x1,x2) -> new DecisionTreeNode();
+        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> function = (x1, x2) -> new DecisionTreeNode();
 
-        DecisionTreeNode node = CrossValidator.performCrossValidation(attributes, labelIndex,function,4 );
+        DecisionTreeNode node = CrossValidator.performCrossValidation(FormatedAttributes, labelIndex, function, 4);
 
         System.out.println("##############################");
         System.out.println("Saved at: " + xmlPath);
+        System.out.println(Tester.test(attributes, root, labelIndex));
+        endTime = System.nanoTime();
+        totalTime = endTime - startTime;
+        System.out.println(totalTime / 1000000 + " ms");
     }
 
     public static List<CSVAttribute[]> attributeListConverter(List<String[]> content) {    //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Fügt die Zeilen zusammen)
@@ -117,7 +129,7 @@ public class Main {
             } else {
                 a = new Discrete();
                 a.setValue(line[i]);
-                a.setBackUpValue((int)Double.parseDouble(line[i]));
+                a.setBackUpValue((int) Double.parseDouble(line[i]));
                 a.setAttributIndex(i);
             }
             attributeLine[i] = a;
@@ -176,4 +188,5 @@ public class Main {
     public static void setAttributeName(String[] attributeName) {
         Main.attributeName = attributeName;
     }
+
 }

@@ -31,7 +31,7 @@ public class CSVReader {
             BufferedReader reader = new BufferedReader(new FileReader(relativePath));
             String currentLine = "";
             if(ignoreHeader)
-                Main.setAttributeName(reader.readLine().split(delimiter));    //Die Attributbezeichnungen werden gespeichert, wenn ignore ignoreHeader true
+                Main.setAttributeName(reader.readLine().split(delimiter));    //Die Attributbezeichnungen werden gespeichert, wenn ignoreHeader true
             while ((currentLine=reader.readLine()) !=null){
                 readDate.add(currentLine.split(delimiter));
                 rows++;

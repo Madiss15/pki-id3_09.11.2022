@@ -30,26 +30,26 @@ public class EntropyUtils {
         if (range.size() <= 1)     //Wenn nur noch ein Wert in range steht, wurde ein Blattknoten erreicht
             return (null);
 
-        System.out.println("Label: " + Main.getIndexName((int) matrix1.get(0)[labelIndex].getAttributIndex())); //Ausgabe von Informationen über labelindex an diesem Zweig
-        System.out.println("H(E) = " + he);
+        //System.out.println("Label: " + Main.getIndexName((int) matrix1.get(0)[labelIndex].getAttributIndex())); //Ausgabe von Informationen über labelindex an diesem Zweig
+        //System.out.println("H(E) = " + he);
 
         for (int i = 0; i < matrix1.get(0).length; i++) { //Es wird über alle Spalten Iteriert (bis auf labelIndex) und deren Informationsgehalt bestimmt
             if (!(i == labelIndex)) {
                 gains.add(he - ra(matrix1, i, labelIndex));  //Gain(A) = H(E) - R(A)
-                System.out.println("Gain: " + gains.get(i));
+               // System.out.println("Gain: " + gains.get(i));
             }
         }
         return gains;
     }
 
-    private static double ra(List<CSVAttribute[]> matrix, int labelIndexToAnalyze, int labelIndex) { //Berechnet R(A) an der Spalte labelIndexToAnalyze
+    private static double ra(List<CSVAttribute[]> matrix, int labelIndexToAnalyze, int labelIndex) { //Berechnet R(A) von der Spalte labelIndexToAnalyze
         double ra = 0;
         List<String> rangeToAnalyze = Main.rangeFinder(matrix, labelIndexToAnalyze);       //Ermittelt die Attributwerte, die labelIndexToAnalyze annimmt
         int[] rangeCounter = Main.rangeCounter(matrix, rangeToAnalyze, labelIndexToAnalyze);    //Ermittel, wie häufig die einzelnen Attributwerte vorkommen
-        System.out.println(rangeToAnalyze + " " + Main.getIndexName((int) matrix.get(0)[labelIndexToAnalyze].getAttributIndex())); //Ausgeben der gewonnenen Informationen
+       /* System.out.println(rangeToAnalyze + " " + Main.getIndexName((int) matrix.get(0)[labelIndexToAnalyze].getAttributIndex())); //Ausgeben der gewonnenen Informationen
         for (int a : rangeCounter)
             System.out.print(a + "  ");
-        System.out.println();
+        System.out.println();*/
         for (int k = 0; k < rangeToAnalyze.size(); k++) {   //Es wird über alle unterschiedlichen Attributwerte der Spalte labelIndexToAnalyze iteriert
             double hek = 0;
             for (int i = 0; i < range.size(); i++) {    //Es wird über alle unterschiedlichen Attributwerte der Spalte labelIndex (Die Spalte, deren Wert vorhergesagt werden soll) iteriert
@@ -78,11 +78,11 @@ public class EntropyUtils {
     }
 
     private static double he(List<CSVAttribute[]> matrix1, int labelIndex, List range) {    //Berechnet H(E) der Spalte, deren Wert vorhergesagt werden soll
-        System.out.println(range);
+        //System.out.println(range);
         int[] rangeCounter = Main.rangeCounter(matrix1, range, labelIndex);
-        for (int a : rangeCounter)
+        /*for (int a : rangeCounter)
             System.out.print(a + " ");
-        System.out.println();
+        System.out.println();*/
         double he = 0;
         for (double a : rangeCounter) {
             double b = -(a / (double) matrix1.size());

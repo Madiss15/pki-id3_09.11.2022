@@ -55,7 +55,7 @@ public class ID3Utils {
         }
 
         if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0) {   //Wenn die Liste mit den Informationsgehalten leer ist oder der beste Wert 0, wurde ein Zustand erreicht, in dem die gleichen Attributsausprägungen zu unterschiedlichen Ergebnissen führen
-            System.out.println("!Gain is zero!");
+            // System.out.println("!Gain is zero!");
             List range = Main.rangeFinder(attributes, labelIndex);      //Um trotzdem einen Blattknoten zuordnen zu können, wird ermittelt welcher labelIndex Wert am häufigsten auftritt, dieser wird als LeafNode class gewählt
             int[] rangeCounter = Main.rangeCounter(attributes, range, labelIndex);
             int mostLikelyValue = 0;
@@ -63,19 +63,19 @@ public class ID3Utils {
                 if (rangeCounter[mostLikelyValue] < rangeCounter[k])
                     mostLikelyValue = k;
             }
-            System.out.println("Very likely LeafNode class:" + range.get(mostLikelyValue));
-            System.out.println("------------------------------");
+           /* System.out.println("Very likely LeafNode class:" + range.get(mostLikelyValue));
+            System.out.println("------------------------------");*/
             root.setSplits("" + range.get(mostLikelyValue), null);
             root.setAttributeIndex((int) attributes.get(0)[labelIndex].getAttributIndex());
             return root;
         }
-        System.out.println("Attribute with biggest gain of Information: " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
+        //System.out.println("Attribute with biggest gain of Information: " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
         System.out.println("------------------------------");
 
         root.setAttributeIndex((int) attributes.get(0)[bestIndex].getAttributIndex());
 
         List<String> range = Main.rangeFinder(attributes, bestIndex);
-        System.out.println(range + " " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
+        // System.out.println(range + " " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
         for (int k = 0; k < range.size(); k++) {
             System.out.println("#Zweig: " + range.get(k) + "# " + Main.getIndexName((int) attributes.get(0)[bestIndex].getAttributIndex()));
             for (int i = 0; i < attributes.size(); i++) {

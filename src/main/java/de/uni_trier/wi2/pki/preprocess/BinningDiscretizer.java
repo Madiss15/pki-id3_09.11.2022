@@ -5,7 +5,6 @@ import de.uni_trier.wi2.pki.Settings;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
 
-import java.sql.DatabaseMetaData;
 import java.util.*;
 
 /**
@@ -21,33 +20,41 @@ public class BinningDiscretizer {
      * @param attributeId  The ID of the attribute to discretize.
      * @return the list of discretized examples.
      */
-
-
+    static double max = Double.MIN_VALUE; //Suche der Extrema, die das Attribut annehmen kann
+    static double min = Double.MAX_VALUE;
+    static int size;
     static boolean binningProcedure = Settings.isBinningProcedure();
+    static CSVAttribute[][] save;
+    static double intervalSize;
+    static int intervalSlot = 1;
+    static boolean set = false;
     // true = gleiche Intervallgröße
     // false = gleiche Punkteanzahl pro Intervall
 
     public static List<CSVAttribute[]> discretize(int numberOfBins, List<CSVAttribute[]> examples, int attributeId) {
+        if (!set) {
+            size = examples.size();
+            save = new CSVAttribute[size][];
+            for (int i = 0; i < size; i++) {
+                save[i] = examples.get(i);
+            }
+            set = true;
+        }
+        max = Double.MIN_VALUE;
+        min = Double.MAX_VALUE;
         if (binningProcedure) {
-            double max = (Double) examples.get(0)[attributeId].getBackUpValue(); //Suche der Extrema, die das Attribut annehmen kann
-            double min = (Double) examples.get(0)[attributeId].getBackUpValue();
-            for (int i = 0; i < examples.size(); i++) {     //Suche des größten Werts
-                if ((Double) examples.get(i)[attributeId].getBackUpValue() > max)
-                    max = (Double) examples.get(i)[attributeId].getBackUpValue();
+            for (int i = 0; i < size; i++) {     //Suche des größten Werts
+                if ((double) save[i][attributeId].getBackUpValue() > max)
+                    max = (double) save[i][attributeId].getBackUpValue();
+                if ((double) save[i][attributeId].getBackUpValue() < min)
+                    min = (double) save[i][attributeId].getBackUpValue();
             }
-            for (int i = 0; i < examples.size(); i++) {     //Suche des kleinsten Werts
-                if ((Double) examples.get(i)[attributeId].getBackUpValue() < min)
-                    min = (Double) examples.get(i)[attributeId].getBackUpValue();
-            }
-
-            double intervalSize;
             intervalSize = (max - min) / numberOfBins;      //Bestimmung der Intervallgröße
 
-            int intervalSlot = 1;
             for (int i = 0; i < examples.size(); i++) {  //Zuweisung des Bins
-                while ((Double) examples.get(i)[attributeId].getBackUpValue() > intervalSize * intervalSlot)    //Solange die Intervallgröße*intervalSlot kleiner als der Attributwert ist, wird der intervalSlot um 1 erhöht
+                while ((double) save[i][attributeId].getBackUpValue() - min > intervalSize * intervalSlot)    //Solange die Intervallgröße*intervalSlot kleiner als der Attributwert ist, wird der intervalSlot um 1 erhöht
                     intervalSlot++;
-                examples.get(i)[attributeId].setValue("" + intervalSlot);       //Zuweisung des intervalSlot als String
+                save[i][attributeId].setValue(Integer.toString(intervalSlot));       //Zuweisung des intervalSlot als String
                 intervalSlot = 1;
             }
 
@@ -102,8 +109,8 @@ public class BinningDiscretizer {
             }
         }
         System.out.println(Main.getIndexName((int) examples.get(0)[attributeId].getAttributIndex()));   //Ausgabe der Spalte, die diskretisiert wurde. Links die originalen Werte, rechts die zugeordneten Bins (Hilfreich zu Testzwecken)
-        for (int k = 0; k < examples.size(); k++)
-            System.out.println(examples.get(k)[attributeId].getBackUpValue() + " | " + examples.get(k)[attributeId].getValue());
+        /*for (int k = 0; k < examples.size(); k++)
+            System.out.println(examples.get(k)[attributeId].getBackUpValue() + " | " + examples.get(k)[attributeId].getValue());*/
         System.out.println("------------------------------");
 
         return examples;
