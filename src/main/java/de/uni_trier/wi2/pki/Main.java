@@ -7,6 +7,7 @@ import de.uni_trier.wi2.pki.io.attr.Categorical;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
 import de.uni_trier.wi2.pki.io.attr.Discrete;
 import de.uni_trier.wi2.pki.postprocess.CrossValidator;
+import de.uni_trier.wi2.pki.postprocess.ReducedErrorPruner;
 import de.uni_trier.wi2.pki.postprocess.Tester;
 import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
 import de.uni_trier.wi2.pki.preprocess.Formater;
@@ -45,6 +46,8 @@ public class Main {
 
     static DecisionTreeNode root;                                      //Wurzelknoten
     static int numFolds = Settings.getNumFolds();
+    ReducedErrorPruner pruner = new ReducedErrorPruner();
+
 
     public static void main(String[] args) {
 
@@ -81,15 +84,17 @@ public class Main {
         long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
         System.out.println(totalTime / 1000000 + " ms");
-        List<CSVAttribute[]> FormatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+        List<CSVAttribute[]> formatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
 
+        /*
         BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = (data, labelAttribute) -> {
             return ID3Utils.createTree(data, labelAttribute);
         };
-        CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);
+        CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);*/
 
-        /*root = ID3Utils.createTree(FormatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
+        root = ID3Utils.createTree(formatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
 
+        //pruner.prune(root,attributes,labelIndex);
 
         try {
             XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
@@ -101,7 +106,7 @@ public class Main {
         System.out.println("##############################");
         System.out.println("Saved at: " + xmlPath);
         System.out.println(Tester.test(attributes, root, labelIndex));
-*/
+
         endTime = System.nanoTime();
         totalTime = endTime - startTime;
         System.out.println(totalTime / 1000000 + " ms");
@@ -173,7 +178,6 @@ public class Main {
         for (int i = 0; i < matrix1.size(); i++)
             if (!range.contains(matrix1.get(i)[labelIndex].getValue()))
                 range.add(matrix1.get(i)[labelIndex].getValue());
-
         return range;
     }
 

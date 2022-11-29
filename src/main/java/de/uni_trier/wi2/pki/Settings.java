@@ -5,11 +5,11 @@ public class Settings {
 
     static int labelIndex = 0;                  //Das Ergebnis dieser Spalte soll prognostiziert werden
 
-    static String sourcePath = "src/main/resources/WeatherAt0.csv"; //Ort der zu untersuchenden CSV-Datei
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smallest.csv"; //Ort der zu untersuchenden CSV-Datei
     static String xmlPath = "src/main/resources/xml/FullRun1.xml";     //Ort der generierten XML-Datei
 
     static boolean ignoreHead = true;          //Dieser Wert soll true sein, wenn in der ersten Zeile die Attributbezeichnungen stehen
-    static String delimiter = ";";             //Das Trennzeichen in der CSV-Datei
+    static String delimiter = ",";             //Das Trennzeichen in der CSV-Datei
     static boolean testIfDiscrete = false;      //true: Potenzielle bereits diskrete Attribute werden erfasst (Es wird erfasst, ob in einer Spalte nur ganze Zahlen stehen), false: Es wird nur auf kategorische und kontinuierliche Werte getestet
 
     static int numberOfBins = 5;                //Anzahl der Bins, es wird ab 1 gezählt
