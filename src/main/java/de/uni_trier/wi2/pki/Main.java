@@ -1,24 +1,16 @@
 package de.uni_trier.wi2.pki;
 
 import de.uni_trier.wi2.pki.io.CSVReader;
-import de.uni_trier.wi2.pki.io.XMLWriter;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.io.attr.Categorical;
 import de.uni_trier.wi2.pki.io.attr.Continuous;
 import de.uni_trier.wi2.pki.io.attr.Discrete;
 import de.uni_trier.wi2.pki.postprocess.CrossValidator;
-import de.uni_trier.wi2.pki.postprocess.ReducedErrorPruner;
-import de.uni_trier.wi2.pki.postprocess.Tester;
 import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
 import de.uni_trier.wi2.pki.preprocess.Formater;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
-import de.uni_trier.wi2.pki.util.EntropyUtils;
 import de.uni_trier.wi2.pki.util.ID3Utils;
 
-import javax.xml.transform.sax.SAXSource;
-import java.io.IOException;
-import java.io.Writer;
-import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -28,7 +20,6 @@ public class Main {
 
     static int labelIndex = Settings.getLabelIndex();                 //Das Ergebnis dieser Spalte soll prognostiziert werden
 
-    static String xmlPath = Settings.getXmlPath();                    //Ort der generierten XML-Datei
     static String sourcePath = Settings.getSourcePath();              //Ort der zu untersuchenden CSV-Datei
 
     static boolean testIfDiscrete = Settings.isTestIfDiscrete();      //true: Potenzielle bereits diskrete Attribute werden erfasst (Es wird erfasst, ob in einer Spalte nur ganze Zahlen stehen), false: Es wird nur auf kategorische und kontinuierliche Werte getestet
@@ -41,7 +32,7 @@ public class Main {
     static List<String[]> content = new ArrayList<>();                 //Eine List von Strings, in der die gelesene CSV-Datei gespeichert wird
     static List<CSVAttribute[]> attributes;                            //Eine Liste von CSV-Attributen, die durch Konvertierung von content entsteht
 
-    static List<CSVAttribute[]> formatedAttributes;
+    static List<CSVAttribute[]> formattedAttributes;
 
     static int[] type;                                                 //Hier wird der Attributstyp der jeweiligen Spalte festgelegt (1: Continuous, 0: Categorical, 2: Discrete)
     static Scanner sc = new Scanner(System.in);                        //Wird benötigt für die individuelle Anzahl von Bins
@@ -89,7 +80,7 @@ public class Main {
         discreteAllContinuous();
         System.out.println("Formatting dataset...");
         System.out.println("------------------------------");
-        formatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+        formattedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
         System.out.println("Building tree...");
         System.out.println("------------------------------");
     }
@@ -136,9 +127,9 @@ public class Main {
     }
 
     /**
-     *
-     * @param content
-     * @return
+     *  converts the list to attributes line by line
+     * @param content the content of the table in string form
+     * @return a list of converted attributes
      */
     private static List<CSVAttribute[]> attributeListConverter(List<String[]> content) {    //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Fügt die Zeilen zusammen)
         List<CSVAttribute[]> attributes = new LinkedList<>();
@@ -150,6 +141,11 @@ public class Main {
         return attributes;
     }
 
+    /**
+     * converts an array of strings to attributes based on the specified attribute types from type
+     * @param line
+     * @return
+     */
     private static CSVAttribute[] attributeLineConverter(String[] line) {        //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Zeile für Zeile)
         CSVAttribute[] attributeLine = new CSVAttribute[line.length];
         for (int i = 0; i < line.length; i++) {
@@ -235,7 +231,7 @@ public class Main {
         return attributesAsArray;
     }
 
-    public static List<CSVAttribute[]> getFormatedAttributes() {
-        return formatedAttributes;
+    public static List<CSVAttribute[]> getFormattedAttributes() {
+        return formattedAttributes;
     }
 }
