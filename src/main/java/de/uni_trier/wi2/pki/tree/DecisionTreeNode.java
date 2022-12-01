@@ -17,42 +17,54 @@ public class DecisionTreeNode {
      */
     protected int attributeIndex;
 
+
     /**
      * The checked split condition values and the nodes for these conditions.
      */
+
+    protected String prominentLabel;
+
     HashMap<String, DecisionTreeNode> splits = new HashMap<>();
 
-    public void setParent(DecisionTreeNode d){
+    public void setParent(DecisionTreeNode d) {
         parent = d;
     }
 
-    public DecisionTreeNode getParent(){
+    public DecisionTreeNode getParent() {
         return parent;
     }
 
-    public void setAttributeIndex(int a){
+    public void setAttributeIndex(int a) {
         attributeIndex = a;
     }
 
-    public int getAttributeIndex(){
+    public int getAttributeIndex() {
         return attributeIndex;
     }
 
-    public void  setSplits(String s, DecisionTreeNode d){
+    public void setSplits(String s, DecisionTreeNode d) {
         splits.put(s, d);
     }
 
-    public HashMap getSplits(){
+    public HashMap getSplits() {
         return splits;
     }
 
-    public void resetSplits(String s, DecisionTreeNode d){
+    public void resetSplits(String s, DecisionTreeNode d) {
         splits = new HashMap<>();
-        splits.put(s,d);
+        splits.put(s, d);
     }
 
     public void resetSplits(HashMap splits) {
         this.splits = splits;
+    }
+
+    public String getProminentLabel() {
+        return prominentLabel;
+    }
+
+    public void setProminentLabel(String prominentLabel) {
+        this.prominentLabel = prominentLabel;
     }
 }
 

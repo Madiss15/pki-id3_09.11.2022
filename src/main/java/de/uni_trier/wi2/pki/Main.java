@@ -18,6 +18,7 @@ import de.uni_trier.wi2.pki.util.ID3Utils;
 import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.BiFunction;
 
@@ -39,6 +40,7 @@ public class Main {
 
     static List<String[]> content = new ArrayList<>();                 //Eine List von Strings, in der die gelesene CSV-Datei gespeichert wird
     static List<CSVAttribute[]> attributes;                            //Eine Liste von CSV-Attributen, die durch Konvertierung von content entsteht
+
     static List<CSVAttribute[]> formatedAttributes;
 
     static int[] type;                                                 //Hier wird der Attributstyp der jeweiligen Spalte festgelegt (1: Continuous, 0: Categorical, 2: Discrete)
@@ -47,7 +49,6 @@ public class Main {
 
     static DecisionTreeNode root;                                      //Wurzelknoten
     static int numFolds = Settings.getNumFolds();
-    static ReducedErrorPruner pruner = new ReducedErrorPruner();
 
     static long startTime = System.nanoTime();
     static long endTime;
@@ -56,53 +57,57 @@ public class Main {
     public static void main(String[] args) {
         preProcess();
 
-
         BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = ID3Utils::createTree;
 
         root = CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);
-
-        /*root = ID3Utils.createTree(formatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
-
-        pruner.prune(root,attributes,labelIndex);
-
+/*
         try {
             XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Tree saved at: " + xmlPath);
 */
-        System.out.println("##############################");
-        System.out.println("Saved at: " + xmlPath);
-
-        //System.out.println(Tester.test(attributes, root, labelIndex));
-
         endTime = System.nanoTime();
         totalTime = endTime - startTime;
-        System.out.println(totalTime / 1000000 + " ms");
+        System.out.println("Runtime: " + totalTime / 1000000000 + " s");
+
     }
 
-    public static void preProcess() {
+    /**
+     *executes all methods up to the creation of the tree
+     */
+    private static void preProcess() {
         content = CSVReader.readCsvToArray(sourcePath, delimiter, ignoreHead);  //Lesen der CSV
         checkForCorrectLabel();
         type = new int[content.get(0).length];
         typeTester(content);    //Der Attributstyp der jeweiligen Spalte wird festgelegt
         attributes = attributeListConverter(content);   // Konvertierung zu Objekten
         showInformationAboutAttributes();
+        System.out.println("Binning Continuous values...");
+        System.out.println("------------------------------");
         discreteAllContinuous();
+        System.out.println("Formatting dataset...");
+        System.out.println("------------------------------");
         formatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
-        endTime = System.nanoTime();
-        totalTime = endTime - startTime;
-        System.out.println(totalTime / 1000000 + " ms");
+        System.out.println("Building tree...");
+        System.out.println("------------------------------");
     }
 
-    public static void showInformationAboutAttributes() {
+    /**
+     *indicates what type of attribute is in the table column
+     */
+    private static void showInformationAboutAttributes() {
         for (int k = 0; k < attributes.get(0).length; k++) {   //Ausgeben der Typen
             System.out.println(Main.getIndexName(k) + " is " + attributes.get(0)[k].getClass().getSimpleName());
         }
         System.out.println("------------------------------");
     }
 
-    public static void discreteAllContinuous() {
+    /**
+     * dicretizes all selected columns
+     */
+    private static void discreteAllContinuous() {
         for (int i = 0; i < type.length; i++) { //Diskretisierung aller Spalten, die kontinuierlich sind ggf. mit individueller Anzahl von Bins
             if (individualBins) {
                 if (type[i] == 1) {
@@ -118,25 +123,34 @@ public class Main {
         }
     }
 
-    public static void checkForCorrectLabel() {
+    /**
+     *tests whether the label index is set too large and if so sets it to the last column
+     */
+    private static void checkForCorrectLabel() {
         if (labelIndex > content.get(0).length - 1) {      //Testen auf validen Labelindex
             labelIndex = content.get(0).length - 1;
             Settings.setLabelIndex(labelIndex);
-            System.out.println("Label index is out of range. I proceed with last label Index: " + (content.get(0).length - 1));
+            System.out.println("Label index is out of range. I proceed with last label index: " + (content.get(0).length - 1));
             System.out.println("------------------------------");
         }
     }
 
-    public static List<CSVAttribute[]> attributeListConverter(List<String[]> content) {    //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Fügt die Zeilen zusammen)
+    /**
+     *
+     * @param content
+     * @return
+     */
+    private static List<CSVAttribute[]> attributeListConverter(List<String[]> content) {    //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Fügt die Zeilen zusammen)
         List<CSVAttribute[]> attributes = new LinkedList<>();
         for (int i = 0; i < content.size(); i++) {
             CSVAttribute[] number = attributeLineConverter(content.get(i));
             attributes.add(number);
         }
+        Collections.shuffle(attributes);
         return attributes;
     }
 
-    public static CSVAttribute[] attributeLineConverter(String[] line) {        //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Zeile für Zeile)
+    private static CSVAttribute[] attributeLineConverter(String[] line) {        //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Zeile für Zeile)
         CSVAttribute[] attributeLine = new CSVAttribute[line.length];
         for (int i = 0; i < line.length; i++) {
             CSVAttribute a;
@@ -161,7 +175,7 @@ public class Main {
         return attributeLine;
     }
 
-    public static void typeTester(List<String[]> content) {         //Ordnet den Spalten einen Typ in type zu
+    private static void typeTester(List<String[]> content) {         //Ordnet den Spalten einen Typ in type zu
         for (int k = 0; k < content.get(0).length; k++) {
             for (int i = 0; i < content.size(); i++) {
                 try {
@@ -182,11 +196,6 @@ public class Main {
         }
     }
 
-    public static String getIndexName(int labelIndex) { //ignoreHead false: Es wird die Attributenbezeichnung der Spalte labelIndex zurückgegeben
-        if (ignoreHead)
-            return attributeName[labelIndex];
-        return ("Index " + labelIndex);
-    }
 
     public static List rangeFinder(List<CSVAttribute[]> matrix1, int labelIndex) { //Liefert die unterschiedlichen Werte, die das Attribut an der Stelle labelIndex annimmt (kann beim Binning hilfreich sein)
         List range = new LinkedList();
@@ -194,6 +203,12 @@ public class Main {
             if (!range.contains(matrix1.get(i)[labelIndex].getValue()))
                 range.add(matrix1.get(i)[labelIndex].getValue());
         return range;
+    }
+
+    public static String getIndexName(int labelIndex) { //ignoreHead false: Es wird die Attributenbezeichnung der Spalte labelIndex zurückgegeben
+        if (ignoreHead)
+            return attributeName[labelIndex];
+        return ("Index " + labelIndex);
     }
 
     public static int[] rangeCounter(List<CSVAttribute[]> matrix1, List range, int labelIndex) { //Zählt, wie oft ein einzelner Attributwert aus range vorkommt
@@ -220,4 +235,7 @@ public class Main {
         return attributesAsArray;
     }
 
+    public static List<CSVAttribute[]> getFormatedAttributes() {
+        return formatedAttributes;
+    }
 }

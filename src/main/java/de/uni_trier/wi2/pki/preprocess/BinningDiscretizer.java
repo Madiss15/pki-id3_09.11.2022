@@ -44,10 +44,6 @@ public class BinningDiscretizer {
             sameFrequency(numberOfBins, examples, attributeId);
         else
             sameQuantityInit(numberOfBins, examples);
-        /*System.out.println(Main.getIndexName((int) examples.get(0)[attributeId].getAttributIndex()));   //Ausgabe der Spalte, die diskretisiert wurde. Links die originalen Werte, rechts die zugeordneten Bins (Hilfreich zu Testzwecken)
-        for (int k = 0; k < examples.size(); k++)
-            System.out.println(examples.get(k)[attributeId].getBackUpValue() + " | " + examples.get(k)[attributeId].getValue());
-        System.out.println("------------------------------");*/
         return examples;
     }
 
@@ -66,7 +62,7 @@ public class BinningDiscretizer {
     public static void sameQuantityInit(int numberOfBins, List<CSVAttribute[]> examples) {
         //Wenn sich die Elemente nicht sauber auf die Anzahl der Bins verteilen lassen, werden vom kleinsten Intervall ausgehend jedem Intervall ein Element mehr zugeteilt
         if (numberOfBins > examples.size()) {     //Es wird einmalig eine Fehlermeldung ausgegeben
-            System.out.println("More Bins than data points were selected, I proceed with a number of bins equal to data points quantity.");
+            System.out.println("More bins than data points were selected, I proceed with a number of bins equal to data points quantity.");
             numberOfBins = examples.size();
         }
         pointsPerInterval = examples.size() / numberOfBins; //Es wird die Zahl von Datenpunkten ermittelt

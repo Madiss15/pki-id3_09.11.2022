@@ -1,12 +1,13 @@
 package de.uni_trier.wi2.pki;
 
 public class Settings {
-
+    //For reference, dataset diabetes_binary_5050split_health_indicators_BRFSS2015, numberOfBins = 5 and numFolds = 5 takes the
+    //Code to run for approximately 3,396 minutes
 
     static int labelIndex = 0;                  //Das Ergebnis dieser Spalte soll prognostiziert werden
 
-    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smaller.csv"; //Ort der zu untersuchenden CSV-Datei
-    static String xmlPath = "src/main/resources/xml/Run2.xml";     //Ort der generierten XML-Datei
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015.csv"; //Ort der zu untersuchenden CSV-Datei
+    static String xmlPath = "src/main/resources/xml/Run1.xml";     //Ort der generierten XML-Datei
 
     static boolean ignoreHead = true;          //Dieser Wert soll true sein, wenn in der ersten Zeile die Attributbezeichnungen stehen
     static String delimiter = ",";             //Das Trennzeichen in der CSV-Datei
@@ -16,7 +17,7 @@ public class Settings {
     static boolean binningProcedure = true;     //true: Gleiche Intervallgröße, false: gleiche Punkteanzahl pro Intervall
     static boolean individualBins = false;      //true: Es wird für jede Spalte eine individuelle Anzahl von Bins angefordert, false: es wird immer numberOfBins angewendet
 
-    static int numFolds = 2;
+    static int numFolds = 5;
 
     public static void setLabelIndex(int labelIndex) {
         Settings.labelIndex = labelIndex;

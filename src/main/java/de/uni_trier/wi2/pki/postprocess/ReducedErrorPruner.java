@@ -20,59 +20,75 @@ public class ReducedErrorPruner {
      * @param labelAttributeId    The label attribute.
      */
     int labelAttributeId;
-    double OriginalClassificationAccuracy;
-    String leaveNodeValue;
+    Collection<CSVAttribute[]> validationExamples;
+    DecisionTreeNode trainedDecisionTree;
+
+    double originalClassificationAccuracy;
     List range;
     HashMap<String, DecisionTreeNode> splitsChace;
-    HashMap<String, DecisionTreeNode> splitsChace1;
     int attributeIndexChace;
-    int attributeIndexChace1;
-    DecisionTreeNode trainedDecisionTree;
-    DecisionTreeNode node;
-    Collection<CSVAttribute[]> validationExamples;
+    DecisionTreeNode nodeToPrune;
     double currentBest = 0;
     double toCompare = 0;
 
     public void prune(DecisionTreeNode trainedDecisionTree, Collection<CSVAttribute[]> validationExamples, int labelAttributeId) {
-        this.labelAttributeId = labelAttributeId;
-        OriginalClassificationAccuracy = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
-        range = Main.rangeFinder((List) validationExamples, labelAttributeId);
         this.trainedDecisionTree = trainedDecisionTree;
         this.validationExamples = validationExamples;
+        this.labelAttributeId = labelAttributeId;
+        range = Main.rangeFinder((List) validationExamples, labelAttributeId);
+        originalClassificationAccuracy = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
+        setProminentLabel(trainedDecisionTree);
         do {
+            currentBest = 0;
+            toCompare = 0;
             findNodeToPrune(trainedDecisionTree);
-        }while (currentBest>OriginalClassificationAccuracy);
+            nodeToPrune.resetSplits(findLeaveNode(nodeToPrune), null);
+            nodeToPrune.setAttributeIndex(labelAttributeId);
+        } while (currentBest>=originalClassificationAccuracy);
     }
 
-    public void findNodeToPrune(DecisionTreeNode trainedDecisionTree) {
-        HashMap<String, DecisionTreeNode> map = trainedDecisionTree.getSplits();
+    public void findNodeToPrune(DecisionTreeNode subTree) {
+        HashMap<String, DecisionTreeNode> map = subTree.getSplits();
         for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
             DecisionTreeNode child = test.getValue();
-            if (child== null)
-                return;
-            splitsChace1 = child.getSplits();
-            attributeIndexChace1 = child.getAttributeIndex();
-            child.resetSplits(findLeaveNode(child), null);
-            child.setAttributeIndex(labelAttributeId);
-            toCompare = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
-            if (toCompare > currentBest) {
-                currentBest = toCompare;
-                node = child;
+            if (child != null && child.getAttributeIndex() != labelAttributeId) {
+                testPruneNode(child);
+                findNodeToPrune(child);
             }
-            child.resetSplits(splitsChace1);
-            child.setAttributeIndex(attributeIndexChace1);
-            findNodeToPrune(child);
         }
-        node.resetSplits(findLeaveNode(node), null);
-        node.setAttributeIndex(labelAttributeId);
     }
 
-    public String findLeaveNode(DecisionTreeNode child) {
-        double accuracyWithBestLabel = 0;
-        double searchBestLeaveNode;
-        leaveNodeValue = null;
+    public void testPruneNode(DecisionTreeNode child) {
         splitsChace = child.getSplits();
         attributeIndexChace = child.getAttributeIndex();
+        child.resetSplits(child.getProminentLabel(), null);
+        child.setAttributeIndex(labelAttributeId);
+        toCompare = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
+        if (toCompare > currentBest) {
+            currentBest = toCompare;
+            nodeToPrune = child;
+        }
+        child.resetSplits(splitsChace);
+        child.setAttributeIndex(attributeIndexChace);
+    }
+
+    private void setProminentLabel(DecisionTreeNode subTree) {
+        HashMap<String, DecisionTreeNode> map = subTree.getSplits();
+        for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
+            DecisionTreeNode child = test.getValue();
+            if (child != null && child.getAttributeIndex() != labelAttributeId) {
+                child.setProminentLabel(findLeaveNode(child));
+                setProminentLabel(child);
+            }
+        }
+    }
+
+    private String findLeaveNode(DecisionTreeNode child) {
+        double accuracyWithBestLabel = 0;
+        double searchBestLeaveNode;
+        String leaveNodeValue = null;
+        HashMap<String, DecisionTreeNode> splitsChace = child.getSplits();
+        int attributeIndexChace = child.getAttributeIndex();
         for (int a = 0; a < range.size(); a++) {
             child.resetSplits((String) range.get(a), null);
             child.setAttributeIndex(labelAttributeId);
