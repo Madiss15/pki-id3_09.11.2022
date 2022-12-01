@@ -24,18 +24,19 @@ public class CSVReader {
      * @throws IOException if something goes wrong. Exception should be handled at the calling function.
      */
 
-    public static List<String[]> readCsvToArray(String relativePath, String delimiter, boolean ignoreHeader){
-        List<String[]> readDate = new ArrayList<>();
-        int rows = 0;
+    static List<String[]> readDate = new ArrayList<>();
+    static int rows = 0;
+    static BufferedReader reader;
+
+    public static List<String[]> readCsvToArray(String relativePath, String delimiter, boolean ignoreHeader) {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(relativePath));
+            init(relativePath,delimiter,ignoreHeader);
             String currentLine = "";
-            if(ignoreHeader)
-                Main.setAttributeName(reader.readLine().split(delimiter));    //Die Attributbezeichnungen werden gespeichert, wenn ignoreHeader true
-            while ((currentLine=reader.readLine()) !=null){
+            while ((currentLine = reader.readLine()) != null) {
                 readDate.add(currentLine.split(delimiter));
                 rows++;
             }
+            reader.close();
         } catch (FileNotFoundException e) {
             System.out.println("No file found");
             return null;
@@ -44,9 +45,20 @@ public class CSVReader {
             e.printStackTrace();
         }
         System.out.println("------------------------------");
-        System.out.println(rows+" Lines read");
+        System.out.println(rows + " Lines read");
         System.out.println("------------------------------");
         return readDate;
     }
 
+    public static void init(String relativePath, String delimiter, boolean ignoreHeader){
+        try {
+            reader = new BufferedReader(new FileReader(relativePath));
+            if (ignoreHeader)
+                Main.setAttributeName(reader.readLine().split(delimiter));    //Die Attributbezeichnungen werden gespeichert, wenn ignoreHeader true
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

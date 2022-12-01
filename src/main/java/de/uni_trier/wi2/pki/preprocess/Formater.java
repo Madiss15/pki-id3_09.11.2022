@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Formater {
+
     static List<CSVAttribute[]> formatedAtributes = new ArrayList<>();
     static int height;
     static int width;
@@ -21,11 +22,11 @@ public class Formater {
         attributesAsArray = new CSVAttribute[height][width];
         cache = new CSVAttribute[height][width];
         toMove = new CSVAttribute[height];
-        move(attributes, labelIndex);
+        moveToRightPosition(attributes, labelIndex);
         return formatedAtributes;
     }
 
-    public static void move(List<CSVAttribute[]> attributes, int labelIndex) {
+    public static void moveToRightPosition(List<CSVAttribute[]> attributes, int labelIndex) {
         for (int k = 0; k < height; k++) {
             attributesAsArray[k] = attributes.get(k);
             toMove[k] = attributesAsArray[k][labelIndex];

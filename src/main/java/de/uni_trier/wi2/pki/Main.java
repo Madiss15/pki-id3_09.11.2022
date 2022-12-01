@@ -39,6 +39,7 @@ public class Main {
 
     static List<String[]> content = new ArrayList<>();                 //Eine List von Strings, in der die gelesene CSV-Datei gespeichert wird
     static List<CSVAttribute[]> attributes;                            //Eine Liste von CSV-Attributen, die durch Konvertierung von content entsteht
+    static List<CSVAttribute[]> formatedAttributes;
 
     static int[] type;                                                 //Hier wird der Attributstyp der jeweiligen Spalte festgelegt (1: Continuous, 0: Categorical, 2: Discrete)
     static Scanner sc = new Scanner(System.in);                        //Wird benötigt für die individuelle Anzahl von Bins
@@ -46,28 +47,62 @@ public class Main {
 
     static DecisionTreeNode root;                                      //Wurzelknoten
     static int numFolds = Settings.getNumFolds();
-    ReducedErrorPruner pruner = new ReducedErrorPruner();
+    static ReducedErrorPruner pruner = new ReducedErrorPruner();
 
+    static long startTime = System.nanoTime();
+    static long endTime;
+    static long totalTime;
 
     public static void main(String[] args) {
+        preProcess();
 
-        long startTime = System.nanoTime();
 
-        content = CSVReader.readCsvToArray(sourcePath, delimiter, ignoreHead);  //Lesen der CSV
-        if (labelIndex > content.get(0).length - 1) {      //Testen auf validen Labelindex
-            labelIndex = content.get(0).length - 1;
-            Settings.setLabelIndex(labelIndex);
-            System.out.println("Label index is out of range. I proceed with last label Index: " + (content.get(0).length - 1));
-            System.out.println("------------------------------");
+        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = ID3Utils::createTree;
+
+        root = CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);
+
+        /*root = ID3Utils.createTree(formatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
+
+        pruner.prune(root,attributes,labelIndex);
+
+        try {
+            XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+*/
+        System.out.println("##############################");
+        System.out.println("Saved at: " + xmlPath);
+
+        //System.out.println(Tester.test(attributes, root, labelIndex));
+
+        endTime = System.nanoTime();
+        totalTime = endTime - startTime;
+        System.out.println(totalTime / 1000000 + " ms");
+    }
+
+    public static void preProcess() {
+        content = CSVReader.readCsvToArray(sourcePath, delimiter, ignoreHead);  //Lesen der CSV
+        checkForCorrectLabel();
         type = new int[content.get(0).length];
         typeTester(content);    //Der Attributstyp der jeweiligen Spalte wird festgelegt
         attributes = attributeListConverter(content);   // Konvertierung zu Objekten
+        showInformationAboutAttributes();
+        discreteAllContinuous();
+        formatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+        endTime = System.nanoTime();
+        totalTime = endTime - startTime;
+        System.out.println(totalTime / 1000000 + " ms");
+    }
+
+    public static void showInformationAboutAttributes() {
         for (int k = 0; k < attributes.get(0).length; k++) {   //Ausgeben der Typen
             System.out.println(Main.getIndexName(k) + " is " + attributes.get(0)[k].getClass().getSimpleName());
         }
         System.out.println("------------------------------");
+    }
 
+    public static void discreteAllContinuous() {
         for (int i = 0; i < type.length; i++) { //Diskretisierung aller Spalten, die kontinuierlich sind ggf. mit individueller Anzahl von Bins
             if (individualBins) {
                 if (type[i] == 1) {
@@ -81,35 +116,15 @@ public class Main {
                 }
             }
         }
-        long endTime = System.nanoTime();
-        long totalTime = endTime - startTime;
-        System.out.println(totalTime / 1000000 + " ms");
-        List<CSVAttribute[]> formatedAttributes = Formater.format(attributes, labelIndex); //Der Code funktioniert nur, wenn labelIndex an der letzten Spalte steht, folglich muss er in allen anderen Fällen ans Ende verschoben werden
+    }
 
-        /*
-        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = (data, labelAttribute) -> {
-            return ID3Utils.createTree(data, labelAttribute);
-        };
-        CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);*/
-
-        root = ID3Utils.createTree(formatedAttributes, attributes.get(0).length - 1);  //Erstellung des Baumes
-
-        //pruner.prune(root,attributes,labelIndex);
-
-        try {
-            XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void checkForCorrectLabel() {
+        if (labelIndex > content.get(0).length - 1) {      //Testen auf validen Labelindex
+            labelIndex = content.get(0).length - 1;
+            Settings.setLabelIndex(labelIndex);
+            System.out.println("Label index is out of range. I proceed with last label Index: " + (content.get(0).length - 1));
+            System.out.println("------------------------------");
         }
-
-        System.out.println("------------------------------");
-        System.out.println("##############################");
-        System.out.println("Saved at: " + xmlPath);
-        System.out.println(Tester.test(attributes, root, labelIndex));
-
-        endTime = System.nanoTime();
-        totalTime = endTime - startTime;
-        System.out.println(totalTime / 1000000 + " ms");
     }
 
     public static List<CSVAttribute[]> attributeListConverter(List<String[]> content) {    //Konvertiert die gelesene CSV in eine Liste von CSV-Attributen (Fügt die Zeilen zusammen)
@@ -195,6 +210,14 @@ public class Main {
 
     public static void setAttributeName(String[] attributeName) {
         Main.attributeName = attributeName;
+    }
+
+    public static CSVAttribute[][] convetToArray(List<CSVAttribute[]> attributes) {
+        int size = attributes.size();
+        CSVAttribute[][] attributesAsArray = new CSVAttribute[size][];
+        for (int i = 0; i < size; i++)
+            attributesAsArray[i] = attributes.get(i);
+        return attributesAsArray;
     }
 
 }

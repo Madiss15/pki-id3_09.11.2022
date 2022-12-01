@@ -26,9 +26,7 @@ public class CrossValidator {
      * @param trainFunction  the function to train the model with.
      * @param numFolds       the number of data folds.
      */
-    public static DecisionTreeNode performCrossValidation(List<CSVAttribute[]> dataset, int labelAttribute,
-                                                          BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction,
-                                                          int numFolds) {
+    public static DecisionTreeNode performCrossValidation(List<CSVAttribute[]> dataset, int labelAttribute, BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction, int numFolds) {
         if (numFolds == 0) {
             try {
                 throw new Exception("CrossValidation cannot use 0 numFolds!!");
@@ -46,16 +44,16 @@ public class CrossValidator {
             int maxIndexTesting = (int) ((i + 1) * foldSize);
 
             List<CSVAttribute[]> datasetForTest = dataset.subList(minIndexTesting, maxIndexTesting);
-            List<CSVAttribute[]> datasetForTrain = Stream.concat(dataset.subList(0, minIndexTesting).stream(), dataset.subList(maxIndexTesting, dataAmount - 1).stream())
-                    .collect(Collectors.toList());
-            datasetForTrain = Formater.format(datasetForTrain,Settings.getLabelIndex());
-            DecisionTreeNode rootOfTree = trainFunction.apply(datasetForTrain, datasetForTrain.get(0).length-1);
+            List<CSVAttribute[]> datasetForTrain = Stream.concat(dataset.subList(0, minIndexTesting).stream(), dataset.subList(maxIndexTesting, dataAmount - 1).stream()).collect(Collectors.toList());
+            datasetForTrain = Formater.format(datasetForTrain, Settings.getLabelIndex());
+            DecisionTreeNode rootOfTree = trainFunction.apply(datasetForTrain, datasetForTrain.get(0).length - 1);
+
             double classAccuracy = Tester.test(datasetForTest, rootOfTree, labelAttribute);
             accumulatedClassAccuracy += classAccuracy;
+            System.out.println(classAccuracy);
         }
 
         System.out.println(accumulatedClassAccuracy / numFolds);
         return null;
     }
-
 }

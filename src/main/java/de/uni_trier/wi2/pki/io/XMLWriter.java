@@ -20,13 +20,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Serializes the decision tree in form of an XML structure.
  */
 public class XMLWriter {
-    static String classTitle = "Node";
 
     /**
      * Serialize decision tree to specified path.
@@ -35,26 +33,19 @@ public class XMLWriter {
      * @param decisionTree the tree to serialize.
      * @throws IOException if something goes wrong.
      */
+
+    static String classTitle = "Node";
+
+    static Element rootElement;
+    static Element firstSplitt;
+    static Document doc;
+
     public static void writeXML(String path, DecisionTreeNode decisionTree) throws IOException {
-        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = null;
-        try {
-            docBuilder = docFactory.newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        }
 
+        init(decisionTree);
+        testIfSameLeaveNode(decisionTree);
+        buildXmlTree(decisionTree, firstSplitt, doc);
 
-        Document doc = docBuilder.newDocument();
-        Element rootElement = doc.createElement("DecisionTree");
-        doc.appendChild(rootElement);
-
-        Element a = doc.createElement(classTitle);
-        a.setAttribute("attribute", Main.getIndexName(decisionTree.getAttributeIndex()));
-
-        rootElement.appendChild(a);
-        testIfSameNode(decisionTree);
-        rek(decisionTree, a, doc);
         try (FileOutputStream output = new FileOutputStream(path)) {
             writeXml(doc, output);
         } catch (IOException e) {
@@ -64,54 +55,78 @@ public class XMLWriter {
         }
     }
 
-    private static void rek(DecisionTreeNode decisionTree, Element a, Document doc) {
+    private static void init(DecisionTreeNode decisionTree) {
+        DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = null;
+        try {
+            docBuilder = docFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        doc = docBuilder.newDocument();
+        rootElement = doc.createElement("DecisionTree");
+        doc.appendChild(rootElement);
+        firstSplitt = doc.createElement(classTitle);
+        firstSplitt.setAttribute("attribute", Main.getIndexName(decisionTree.getAttributeIndex()));
+        rootElement.appendChild(firstSplitt);
+    }
+
+    private static void buildXmlTree(DecisionTreeNode decisionTree, Element parent, Document doc) {
         HashMap<String, DecisionTreeNode> map = decisionTree.getSplits();
-        for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
-            Element c = doc.createElement(classTitle);
-            String b = test.getKey();
-            DecisionTreeNode child = test.getValue();
-            if (child == null) {
+        for (HashMap.Entry<String, DecisionTreeNode> branch : map.entrySet()) {
+            Element childElement = doc.createElement(classTitle);
+            String b = branch.getKey();
+            DecisionTreeNode child = branch.getValue();
+            if (child == null)
                 return;
-            }
-            if (child.getSplits().size() == 1) {
-                c = doc.createElement("LeafNode");
-                c.setAttribute("class", "" + child.getSplits().keySet().toArray()[0]);
-            } else
-                c.setAttribute("attribute", Main.getIndexName(child.getAttributeIndex()));
-            Element node = doc.createElement("IF");
-            a.appendChild(node);
+            childElement = testIfLeaveNode(child, childElement, doc);
+            Element compareElement = doc.createElement("IF");
+            parent.appendChild(compareElement);
             Attr attributeName = doc.createAttribute("value");
             attributeName.setValue(b);
-            node.setAttributeNode(attributeName);
-            node.appendChild(c);
-            rek(child, c, doc);
+            compareElement.setAttributeNode(attributeName);
+            compareElement.appendChild(childElement);
+            buildXmlTree(child, childElement, doc);
         }
     }
 
-    private static String testIfSameNode(DecisionTreeNode decisionTree) {
+    private static Element testIfLeaveNode(DecisionTreeNode child, Element childElement, Document doc) {
+        if (child.getSplits().
+                size() == 1) {
+            childElement = doc.createElement("LeafNode");
+            childElement.setAttribute("class", "" + child.getSplits().keySet().toArray()[0]);
+        } else
+            childElement.setAttribute("attribute", Main.getIndexName(child.getAttributeIndex()));
+        return childElement;
+    }
+
+    private static String testIfSameLeaveNode(DecisionTreeNode decisionTree) {
         HashMap<String, DecisionTreeNode> map = decisionTree.getSplits();
         int counter = 0;
-        boolean same = true;
         String[] leave = new String[map.size()];
         for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
             String b = test.getKey();
             DecisionTreeNode child = test.getValue();
             if (child == null)
                 return b;
-            leave[counter] = testIfSameNode(child);
+            leave[counter] = testIfSameLeaveNode(child);
             counter++;
         }
+        setNewLeaveNode(decisionTree, leave);
+        return null;
+    }
+
+    private static void setNewLeaveNode(DecisionTreeNode decisionTree, String[] leave) {
+        boolean same = true;
         if (leave[0] != null) {
             for (String a : leave)
                 if (!leave[0].equals(a))
                     same = false;
             if (same) {
-
                 decisionTree.resetSplits(leave[0], null);
                 decisionTree.setAttributeIndex(Settings.getLabelIndex());
             }
         }
-        return null;
     }
 
     private static void writeXml(Document doc, OutputStream output) throws TransformerException {

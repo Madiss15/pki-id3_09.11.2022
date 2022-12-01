@@ -45,9 +45,14 @@ public class DecisionTreeNode {
     public HashMap getSplits(){
         return splits;
     }
+
     public void resetSplits(String s, DecisionTreeNode d){
         splits = new HashMap<>();
         splits.put(s,d);
+    }
+
+    public void resetSplits(HashMap splits) {
+        this.splits = splits;
     }
 }
 

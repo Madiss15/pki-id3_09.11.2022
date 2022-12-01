@@ -9,31 +9,29 @@ import java.util.List;
 
 public class Tester {
     static int counter;
-    private static final DecimalFormat df = new DecimalFormat("0.000");
-
+    //private static final DecimalFormat df = new DecimalFormat("0.000");
 
     public static double test(List<CSVAttribute[]> compare, DecisionTreeNode decisionTree, int labelIndex) {
         counter = 0;
         for (CSVAttribute[] line : compare)
-            test(line, decisionTree, labelIndex);
-        double a = 100 - (double) counter / (compare.size()) * 100;
+            testLine(line, decisionTree, labelIndex);
+        double accuracyOfRightPredicted = (double) counter / (compare.size());
         //return df.format(a) + "% Wrong predicted lines";
-        return a;
+        return accuracyOfRightPredicted;
     }
 
-    public static void test(CSVAttribute[] compare, DecisionTreeNode decisionTree, int labelIndex) {
+    public static void testLine(CSVAttribute[] compare, DecisionTreeNode decisionTree, int labelIndex) {
         if(decisionTree==null){
-            System.out.println("Problem");
             return;
         }
-        String a = (String) compare[decisionTree.getAttributeIndex()].getValue();
+        String toCompare = (String) compare[decisionTree.getAttributeIndex()].getValue();
         if (decisionTree.getAttributeIndex() == labelIndex) {
-            if (a.equals(decisionTree.getSplits().keySet().toArray()[0]))
+            if (toCompare.equals(decisionTree.getSplits().keySet().toArray()[0]))
                 counter++;
             return;
         }
-        DecisionTreeNode node = (DecisionTreeNode) decisionTree.getSplits().get(a);
-        test(compare, node, labelIndex);
+        DecisionTreeNode child = (DecisionTreeNode) decisionTree.getSplits().get(toCompare);
+        testLine(compare, child, labelIndex);
     }
 }
 
