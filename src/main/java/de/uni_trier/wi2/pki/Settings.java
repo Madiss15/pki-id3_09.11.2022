@@ -3,22 +3,22 @@ package de.uni_trier.wi2.pki;
 public class Settings {
 
 
-    static int labelIndex = 6;
+    static int labelIndex = 0;
 
-    static String sourcePath = "src/main/resources/Weather.csv";
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smallest.csv";
     static String xmlPath = "src/main/resources/xml/Run1.xml";
     /**
      * This value should be true if the attribute names are on the first line
      */
     static boolean ignoreHead = true;
-    static String delimiter = ";";
+    static String delimiter = ",";
 
     /**
      * true: potential already discrete attributes are recorded (it is recorded whether a column contains only integers), false: only categorical and continuous values are tested
      */
     static boolean testIfDiscrete = false;
 
-    static int numberOfBins = 5;
+    static int numberOfBins = 3;
     /**
      * true: same interval size, false: same number of points per interval
      */

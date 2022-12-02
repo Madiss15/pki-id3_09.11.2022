@@ -75,7 +75,7 @@ public class ID3Utils {
     }
 
     private static int getIndexOfBestAttribute(Collection<CSVAttribute[]> examples, int labelIndex) {
-        outcome = GiniImpurity.calcInformationGain(examples, labelIndex);  //Ermittlung des Informationsgehalts aus den aktuellen Spalten
+        outcome = EntropyUtils.calcInformationGain(examples, labelIndex);  //Ermittlung des Informationsgehalts aus den aktuellen Spalten
         int bestIndex = 0;
         for (int k = 0; k < outcome.size(); k++) {      //Ermittlung des größten Informationsgehalts aus den aktuellen Spalten
             if (outcome.get(k) > outcome.get(bestIndex)) {

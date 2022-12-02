@@ -11,6 +11,7 @@ import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
 import de.uni_trier.wi2.pki.preprocess.Formater;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 import de.uni_trier.wi2.pki.util.ID3Utils;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
@@ -65,20 +66,18 @@ public class Main {
 
     public static void main(String[] args) {
         preProcess();
-/*
         BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = ID3Utils::createTree;
-
         root = CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);
-*/
-        System.out.println("VectorOperators.Test");
-        root = ID3Utils.createTree(attributes,labelIndex);
+/*
+
+        root = ID3Utils.createTree(formattedAttributes,formattedAttributes.get(0).length-1);
         try {
             XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
         } catch (IOException e) {
             e.printStackTrace();
         }
         System.out.println("Tree saved at: " + xmlPath);
-
+*/
         endTime = System.nanoTime();
         totalTime = endTime - startTime;
         System.out.println("Runtime: " + totalTime / 1000000000 + " s");

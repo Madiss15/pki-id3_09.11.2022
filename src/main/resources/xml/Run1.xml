@@ -7,18 +7,14 @@
                     <LeafNode class="5"/>
                 </IF>
                 <IF value="Cool">
-                    <LeafNode class="Normal">
-                        <IF value="Normal">
-                            <Node attribute="Wind">
-                                <IF value="Weak">
-                                    <LeafNode class="5"/>
-                                </IF>
-                                <IF value="Strong">
-                                    <LeafNode class="1"/>
-                                </IF>
-                            </Node>
+                    <Node attribute="Wind">
+                        <IF value="Weak">
+                            <LeafNode class="5"/>
                         </IF>
-                    </LeafNode>
+                        <IF value="Strong">
+                            <LeafNode class="1"/>
+                        </IF>
+                    </Node>
                 </IF>
             </Node>
         </IF>
@@ -26,22 +22,12 @@
             <LeafNode class="5"/>
         </IF>
         <IF value="Sunny">
-            <Node attribute="Temperatur">
-                <IF value="Mild">
-                    <Node attribute="UV">
-                        <IF value="High">
-                            <LeafNode class="1"/>
-                        </IF>
-                        <IF value="Normal">
-                            <LeafNode class="5"/>
-                        </IF>
-                    </Node>
-                </IF>
-                <IF value="Cool">
-                    <LeafNode class="5"/>
-                </IF>
-                <IF value="Hot">
+            <Node attribute="UV">
+                <IF value="High">
                     <LeafNode class="1"/>
+                </IF>
+                <IF value="Normal">
+                    <LeafNode class="5"/>
                 </IF>
             </Node>
         </IF>
