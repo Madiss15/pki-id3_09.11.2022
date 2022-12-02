@@ -15,8 +15,7 @@ public class Formater {
     static CSVAttribute[] toMove;
 
     /**
-     * Unfortunately the code only works if the label attribute is in the last colum, so in all other cases it has to be moved to the end.
-     * We are aware of the loss of performance.
+     *Since the labelIndex can be in different columns, it is moved to the end in order to be able to work with it.
      *
      * @param attributes
      * @param labelIndex

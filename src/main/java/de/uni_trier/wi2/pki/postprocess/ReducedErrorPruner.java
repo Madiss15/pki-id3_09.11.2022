@@ -31,6 +31,13 @@ public class ReducedErrorPruner {
     double currentBest = 0;
     double toCompare = 0;
 
+    /**
+     * Prunes the given root as long as originalClassificationAccuracyClassificationAccuracy gets better.
+     *
+     * @param trainedDecisionTree
+     * @param validationExamples
+     * @param labelAttributeId
+     */
     public void prune(DecisionTreeNode trainedDecisionTree, Collection<CSVAttribute[]> validationExamples, int labelAttributeId) {
         this.trainedDecisionTree = trainedDecisionTree;
         this.validationExamples = validationExamples;
@@ -44,9 +51,15 @@ public class ReducedErrorPruner {
             findNodeToPrune(trainedDecisionTree);
             nodeToPrune.resetSplits(findLeaveNode(nodeToPrune), null);
             nodeToPrune.setAttributeIndex(labelAttributeId);
-        } while (currentBest>originalClassificationAccuracy);
+            originalClassificationAccuracy = currentBest;
+        } while (currentBest > originalClassificationAccuracy);
     }
 
+    /**
+     * Searches in a depth-first search for the node whose pruning improves the tree the most.
+     *
+     * @param subTree
+     */
     public void findNodeToPrune(DecisionTreeNode subTree) {
         HashMap<String, DecisionTreeNode> map = subTree.getSplits();
         for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
@@ -58,6 +71,13 @@ public class ReducedErrorPruner {
         }
     }
 
+    /**
+     * Receives a node, saves its splits and attribute index temporarily and now converts the node to a leaf node based on getProminentLabel().
+     * The reference to this node gets saved if, its pruning causes the classification quality to get higher than the previous best.
+     * After that, the node is reset to its original values.
+     *
+     * @param child
+     */
     public void testPruneNode(DecisionTreeNode child) {
         splitsChace = child.getSplits();
         attributeIndexChace = child.getAttributeIndex();
@@ -73,6 +93,7 @@ public class ReducedErrorPruner {
     }
 
     /**
+     * Sets the most common value of labelIndex in a depth search for all nodes (except for root and leaf nodes).
      *
      * @param subTree
      */
@@ -88,9 +109,9 @@ public class ReducedErrorPruner {
     }
 
     /**
-     *Receives a node, saves its splits and attribute index temporarily and now converts the node to a leaf node for all values of the label attribute,
-     *it is registered for which value as a leaf node the classification-accuracy is highest and this value is saved in ProminentLabel.
-     *After that the node receives its original values from the cache again.
+     * Receives a node, saves its splits and attribute index temporarily and now converts the node to a leaf node for all values of the label attribute,
+     * it is registered for which value as a leaf node the classification-accuracy is highest and this value is saved in ProminentLabel.
+     * After that the node receives its original values from the cache again.
      *
      * @param child
      * @return

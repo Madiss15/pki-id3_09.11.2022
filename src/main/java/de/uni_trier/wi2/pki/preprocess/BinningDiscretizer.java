@@ -26,8 +26,7 @@ public class BinningDiscretizer {
 
     /**
      * Discretizes a collection of examples according to the number of bins and the respective attribute ID.
-     * <p>
-     * counting starts at 1
+     * Counting starts at 1.
      *
      * @param numberOfBins Specifies the number of numeric ranges that the data will be split up in.
      * @param examples     The list of examples to discretize.

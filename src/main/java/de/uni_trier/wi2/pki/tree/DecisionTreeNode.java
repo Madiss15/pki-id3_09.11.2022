@@ -17,7 +17,6 @@ public class DecisionTreeNode {
      */
     protected int attributeIndex;
 
-
     /**
      * The checked split condition values and the nodes for these conditions.
      */

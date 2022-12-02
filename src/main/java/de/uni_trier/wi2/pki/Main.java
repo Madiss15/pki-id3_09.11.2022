@@ -10,13 +10,15 @@ import de.uni_trier.wi2.pki.postprocess.CrossValidator;
 import de.uni_trier.wi2.pki.preprocess.BinningDiscretizer;
 import de.uni_trier.wi2.pki.preprocess.Formater;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
+import de.uni_trier.wi2.pki.util.EntropyUtils;
+import de.uni_trier.wi2.pki.util.GiniImpurity;
 import de.uni_trier.wi2.pki.util.ID3Utils;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
 
-//Alle Einstellungen zur Nutzung werden in Settings festgelegt
+//All usage settings are defined in Settings
 
 public class Main {
 
@@ -37,28 +39,28 @@ public class Main {
     static List<CSVAttribute[]> attributes = new ArrayList<>();
 
     /**
-     * the formatted list is needed to build the tree. Unfortunately the code only works if the label attribute is in the last colum, so in all other cases it has to be moved to the end
+     * To make the code generic, the formatted list is needed to build the tree.
      */
     static List<CSVAttribute[]> formattedAttributes;
     /**
-     * contains information about what type of attribute is in a column
-     * 0 = Categorical, 1 = Continuous, 2 = Discrete
+     * Contains information about what type of attribute is in a column.
+     * 0 = Categorical, 1 = Continuous, 2 = Discrete.
      */
     static int[] type;
     static Scanner sc = new Scanner(System.in);
 
     /**
-     * contains information about the name of the attribute column
+     * Contains information about the name of the attribute column.
      */
     static String[] attributeName;
 
     /**
-     * the best node from CrossValidator
+     * The root node.
      */
     static DecisionTreeNode root;
 
     /**
-     * is used to calculate the runtime
+     * Is used to calculate the runtime.
      */
     static long startTime = System.nanoTime();
     static long endTime;
@@ -85,7 +87,7 @@ public class Main {
     }
 
     /**
-     * executes all methods up to the creation of the tree
+     * Executes all methods up to the creation of the tree.
      */
     private static void preProcess() {
         content = CSVReader.readCsvToArray(sourcePath, delimiter, ignoreHead);
@@ -105,7 +107,7 @@ public class Main {
     }
 
     /**
-     * indicates what type of attribute is in the table column
+     * Indicates what type of attribute is in the table column.
      */
     private static void showInformationAboutAttributes() {
         for (int k = 0; k < attributes.get(0).length; k++) {
@@ -115,7 +117,7 @@ public class Main {
     }
 
     /**
-     * dicretizes all selected columns. Possibly with individual bin numbers
+     * Discretizes all selected columns. IF selected with individual bin numbers.
      */
     private static void discreteAllContinuous() {
         for (int i = 0; i < type.length; i++) {
@@ -134,7 +136,7 @@ public class Main {
     }
 
     /**
-     * tests whether the label index is set too large and if so sets it to the last column
+     * Tests whether the label index is set too large and if so sets it to the last column.
      */
     private static void checkForCorrectLabel() {
         if (labelIndex > content.get(0).length - 1) {
@@ -146,7 +148,7 @@ public class Main {
     }
 
     /**
-     * converts the list to attributes line by line
+     * Converts the list to attributes line by line.
      *
      * @param content the content of the table in string form
      * @return a list of converted attributes
@@ -161,7 +163,7 @@ public class Main {
     }
 
     /**
-     * converts an array of strings to attributes based on the specified attribute types from "type"
+     * Converts an array of strings to attributes based on the specified attribute types from "type".
      * 0 = Categorical, 1 = Continuous, 2 = Discrete
      *
      * @param line a line from the CSV file as a String array
@@ -193,7 +195,7 @@ public class Main {
     }
 
     /**
-     * determines what type of attribute it is. It decides based on whether a line contains letters, double numbers or just whole numbers
+     * Determines what type of attribute in a column is. It decides based on whether a line contains letters, double numbers or just Integers.
      *
      * @param content
      */
@@ -219,7 +221,7 @@ public class Main {
     }
 
     /**
-     * returns the different values that the attribute from List takes at labelIndex
+     * Returns the different values, that the attribute from List takes at labelIndex.
      *
      * @param matrix1
      * @param labelIndex
@@ -234,7 +236,7 @@ public class Main {
     }
 
     /**
-     * ignoreHead false: The attribute name of the labelIndex column gets returned
+     * ignoreHead false: The attribute name of the labelIndex column gets returned.
      *
      * @param labelIndex
      * @return
@@ -246,7 +248,7 @@ public class Main {
     }
 
     /**
-     * Counts the number of occurrences of a single attribute value from range in List at labelIndex
+     * Counts the number of occurrences of a single attribute value from range in List at labelIndex.
      *
      * @param matrix1
      * @param range
@@ -266,7 +268,7 @@ public class Main {
     }
 
     /**
-     * the column names are saved via this if ignoreHeader is true
+     * Saves The column names, if ignoreHeader is true.
      *
      * @param attributeName
      */
@@ -275,7 +277,7 @@ public class Main {
     }
 
     /**
-     * converts a list to a 2-dimensional array. Using 2D arrays has been shown to improve performance
+     * Converts a list to a 2-dimensional array. Using 2D arrays has been shown to improve performance
      *
      * @param attributes
      * @return
@@ -288,11 +290,6 @@ public class Main {
         return attributesAsArray;
     }
 
-    /**
-     * the formatted list is needed to build the tree. Unfortunately the code only works if the label attribute is in the last colum, so in all other cases it has to be moved to the end
-     *
-     * @return
-     */
     public static List<CSVAttribute[]> getFormattedAttributes() {
         return formattedAttributes;
     }

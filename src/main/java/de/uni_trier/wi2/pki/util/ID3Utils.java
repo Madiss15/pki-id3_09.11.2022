@@ -23,13 +23,13 @@ public class ID3Utils {
      *
      * @param examples   The examples to train with. This is a collection of arrays.
      * @param labelIndex The label of the attribute that should be used as an index.
-     * @return The root node of the decision tree
+     * @return The root node of the decision tree.
      */
 
     public static DecisionTreeNode createTree(Collection<CSVAttribute[]> examples, int labelIndex) {
         List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples;
 
-        if (Main.rangeFinder(attributes, labelIndex).size() <= 1) // If only one more unique value occurs at the labelIndex position, a leaf node is created with this value
+        if (Main.rangeFinder(attributes, labelIndex).size() <= 1) // If only one unique value occurs at the labelIndex position, a leaf node is created with this value
             return setLeave(attributes, labelIndex);
         int bestIndex = getIndexOfBestAttribute(examples, labelIndex);
 
@@ -41,7 +41,7 @@ public class ID3Utils {
     }
 
     /**
-     * After identifying the best attribute for creating the branches, a node is added to split for each different value
+     * After identifying the best column for creating the branches, a Child node is added for each different value of this column.
      *
      * @param bestIndex
      * @param attributesAsArray
@@ -54,7 +54,7 @@ public class ID3Utils {
         root.setAttributeIndex((int) attributesAsArray[0][bestIndex].getAttributIndex());
         List<String> range = Main.rangeFinder(attributes, bestIndex);
         for (int k = 0; k < range.size(); k++) {
-            DecisionTreeNode child = createTree(calcAttributesAfterSplit(bestIndex, range.get(k), attributesAsArray), labelIndex - 1);
+            DecisionTreeNode child = createTree(calcSublist(bestIndex, range.get(k), attributesAsArray), labelIndex - 1); //labelIndex needs to be decreased since the sublist lost one column
             child.setParent(root);
             root.setSplits(range.get(k), child);
         }
@@ -62,15 +62,15 @@ public class ID3Utils {
     }
 
     /**
-     * a new sublist is now created that no longer contains the attribute that was previously compared. However, the list only contains lines in which the characteristic of the compared attribute was the same.
-     * This means there are as many sub-lists as there were different characteristics for the attribute
+     * A new sublist is now created that no longer contains the attribute that was previously compared. However, the list only contains lines in which the value of the compared column was the same.
+     * This means there are as many sub-lists as there were different values for the column.
      *
      * @param bestIndex
      * @param rangeValue
      * @param attributesAsArray
      * @return
      */
-    private static LinkedList<CSVAttribute[]> calcAttributesAfterSplit(int bestIndex, String rangeValue, CSVAttribute[][] attributesAsArray) {
+    private static LinkedList<CSVAttribute[]> calcSublist(int bestIndex, String rangeValue, CSVAttribute[][] attributesAsArray) {
         LinkedList<CSVAttribute[]> attributesAfterSplit = new LinkedList<CSVAttribute[]>();
         for (int i = 0; i < attributesAsArray.length; i++) {
             if (attributesAsArray[i][bestIndex].getValue().equals(rangeValue)) {
@@ -95,7 +95,7 @@ public class ID3Utils {
     }
 
     /**
-     * find the best column to compare
+     * Find the best column to compare.
      *
      * @param examples
      * @param labelIndex
@@ -113,7 +113,7 @@ public class ID3Utils {
     }
 
     /**
-     * setzt die formle zum berechenen der informationsgehalte und erzeigt eine Liste mit dem informationsgehalten
+     * Sets the formula for calculating the information gain and generates a list with information gain for every colum.
      * @param examples
      * @param labelIndex
      */
@@ -132,7 +132,7 @@ public class ID3Utils {
     }
 
     /**
-     *In order to still be able to assign a leaf node, it is determined which labelIndex value occurs most frequently, this is selected as the LeafNode class
+     *In order to still be able to assign a leaf node, it is determined which labelIndex value occurs most frequently, this is selected as the LeafNode class.
      * @param attributes
      * @param labelIndex
      * @return

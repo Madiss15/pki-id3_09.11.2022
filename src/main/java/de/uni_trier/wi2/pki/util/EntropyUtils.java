@@ -10,6 +10,11 @@ import java.util.*;
  */
 public class EntropyUtils {
 
+
+    static List<String> range;
+    static CSVAttribute[][] attributesAsArray;
+    static int sizeOfMatrix;
+
     /**
      * Calculates the information gain for all attributes
      *
@@ -18,10 +23,6 @@ public class EntropyUtils {
      * football, than labelIndex is 2
      * @return the information gain for each attribute
      */
-
-    static List<String> range;
-    static CSVAttribute[][] attributesAsArray;
-    static int sizeOfMatrix;
 
     public static List<Double> calcInformationGain(Collection<CSVAttribute[]> matrix, int labelIndex) {
         List<Double> gains = new ArrayList<>();     //A list of gain values
