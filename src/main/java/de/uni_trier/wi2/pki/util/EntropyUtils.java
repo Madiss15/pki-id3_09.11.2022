@@ -65,7 +65,7 @@ public class EntropyUtils {
         return heOfk;
     }
 
-    private static int countOcourences(int labelIndexToAnalyze, String valueToAnalyze, int labelIndex, String vlaueFromRange) {
+    public static int countOcourences(int labelIndexToAnalyze, String valueToAnalyze, int labelIndex, String vlaueFromRange) {
         int counter = 0;
         for (int j = 0; j < sizeOfMatrix; j++) {   //Es wird über die gesamte Tabelle Zeile für Zeile iteriert, und getestet, ob der Attributwert aus labelIndexToAnalyze und der Attributwert aus labelIndex gleichzeitig vorkommen
             if (attributesAsArray[j][labelIndexToAnalyze].getValue().equals(valueToAnalyze) && attributesAsArray[j][labelIndex].getValue().equals(vlaueFromRange)) {         //Dies muss für alle aus labelIndexToAnalyze*labelIndex vorgenommen werden

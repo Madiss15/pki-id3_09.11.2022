@@ -26,10 +26,10 @@ public class ID3Utils {
 
     public static DecisionTreeNode createTree(Collection<CSVAttribute[]> examples, int labelIndex) {
         List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples;
-        int bestIndex = getIndexOfBestAttribute(examples, labelIndex);
 
         if (Main.rangeFinder(attributes, labelIndex).size() <= 1)
             return setLeave(attributes, labelIndex);
+        int bestIndex = getIndexOfBestAttribute(examples, labelIndex);
 
         if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0)
             return gainIsZero(attributes, labelIndex);
@@ -67,7 +67,7 @@ public class ID3Utils {
         return attributesAfterSplit;
     }
 
-    public static DecisionTreeNode setLeave(List<CSVAttribute[]> attributes, int labelIndex) {
+     static DecisionTreeNode setLeave(List<CSVAttribute[]> attributes, int labelIndex) {
         DecisionTreeNode root = new DecisionTreeNode();
         root.setAttributeIndex((int) attributes.get(0)[labelIndex].getAttributIndex());
         root.setSplits((String) attributes.get(0)[labelIndex].getValue(), null);        //Der Blattknoten erhält den Wert von labelIndex

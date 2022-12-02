@@ -31,7 +31,7 @@ public class Main {
     static int numFolds = Settings.getNumFolds();
 
     static List<String[]> content = new ArrayList<>();
-    static List<CSVAttribute[]> attributes;
+    static List<CSVAttribute[]> attributes = new ArrayList<>();
 
     /**
      * the formatted list is needed to build the tree. Unfortunately the code only works if the label attribute is in the last colum, so in all other cases it has to be moved to the end

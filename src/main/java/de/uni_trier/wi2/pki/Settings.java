@@ -5,7 +5,7 @@ public class Settings {
 
     static int labelIndex = 0;
 
-    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015.csv";
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smallest.csv";
     static String xmlPath = "src/main/resources/xml/Run1.xml";
     /**
      * This value should be true if the attribute names are on the first line
@@ -28,7 +28,7 @@ public class Settings {
      */
     static boolean individualBins = false;
 
-    static int numFolds = 5;
+    static int numFolds = 3;
 
     public static void setLabelIndex(int labelIndex) {
         Settings.labelIndex = labelIndex;
