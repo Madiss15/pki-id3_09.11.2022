@@ -30,10 +30,10 @@ public class ID3Utils {
         List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples;
 
         if (Main.rangeFinder(attributes, labelIndex).size() <= 1) // If only one unique value occurs at the labelIndex position, a leaf node is created with this value
-            return setLeave(attributes, labelIndex);
+            return setLeaf(attributes, labelIndex);
         int bestIndex = getIndexOfBestAttribute(examples, labelIndex);
 
-        if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0) // When a point is reached where the information content is zero, a leaf node with the most common label index is inserted.
+        if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0) // When a point is reached where the information gain for each column is zero, a leaf node with the most common label index is inserted.
             return gainIsZero(attributes, labelIndex);
 
         CSVAttribute[][] attributesAsArray = Main.convetToArray(attributes);
@@ -87,7 +87,7 @@ public class ID3Utils {
     }
 
 
-    private static DecisionTreeNode setLeave(List<CSVAttribute[]> attributes, int labelIndex) {
+    private static DecisionTreeNode setLeaf(List<CSVAttribute[]> attributes, int labelIndex) {
         DecisionTreeNode root = new DecisionTreeNode();
         root.setAttributeIndex((int) attributes.get(0)[labelIndex].getAttributIndex());
         root.setSplits((String) attributes.get(0)[labelIndex].getValue(), null);        //The leaf node gets the value of labelIndex

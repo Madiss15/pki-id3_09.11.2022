@@ -24,7 +24,7 @@ public class DecisionTreeNode {
     HashMap<String, DecisionTreeNode> splits = new HashMap<>();
 
     /**
-     * the most common result for this branch depending on the test data (is used for pruning)
+     * The most common result for this branch depending on the test data (is used for pruning).
      */
     protected String prominentLabel;
 

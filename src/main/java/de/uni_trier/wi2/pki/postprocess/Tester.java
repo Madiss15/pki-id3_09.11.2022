@@ -10,7 +10,7 @@ public class Tester {
     static int counter;
 
     /**
-     * Returns the value of correctly classified rows from the data set in %.
+     * Returns the value of correctly classified rows from the dataset in %.
      * Returns
      *
      * @param compare

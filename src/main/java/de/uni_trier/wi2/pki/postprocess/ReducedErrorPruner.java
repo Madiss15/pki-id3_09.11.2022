@@ -25,8 +25,8 @@ public class ReducedErrorPruner {
 
     double originalClassificationAccuracy;
     List range;
-    HashMap<String, DecisionTreeNode> splitsChace;
-    int attributeIndexChace;
+    HashMap<String, DecisionTreeNode> splitsCache;
+    int attributeIndexCache;
     DecisionTreeNode nodeToPrune;
     double currentBest = 0;
     double toCompare = 0;
@@ -49,7 +49,7 @@ public class ReducedErrorPruner {
             currentBest = 0;
             toCompare = 0;
             findNodeToPrune(trainedDecisionTree);
-            nodeToPrune.resetSplits(findLeaveNode(nodeToPrune), null);
+            nodeToPrune.resetSplits(findLeafNode(nodeToPrune), null);
             nodeToPrune.setAttributeIndex(labelAttributeId);
             originalClassificationAccuracy = currentBest;
         } while (currentBest > originalClassificationAccuracy);
@@ -79,8 +79,8 @@ public class ReducedErrorPruner {
      * @param child
      */
     public void testPruneNode(DecisionTreeNode child) {
-        splitsChace = child.getSplits();
-        attributeIndexChace = child.getAttributeIndex();
+        splitsCache = child.getSplits();
+        attributeIndexCache = child.getAttributeIndex();
         child.resetSplits(child.getProminentLabel(), null);
         child.setAttributeIndex(labelAttributeId);
         toCompare = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
@@ -88,8 +88,8 @@ public class ReducedErrorPruner {
             currentBest = toCompare;
             nodeToPrune = child;
         }
-        child.resetSplits(splitsChace);
-        child.setAttributeIndex(attributeIndexChace);
+        child.resetSplits(splitsCache);
+        child.setAttributeIndex(attributeIndexCache);
     }
 
     /**
@@ -102,7 +102,7 @@ public class ReducedErrorPruner {
         for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
             DecisionTreeNode child = test.getValue();
             if (child != null && child.getAttributeIndex() != labelAttributeId) {
-                child.setProminentLabel(findLeaveNode(child));
+                child.setProminentLabel(findLeafNode(child));
                 setProminentLabel(child);
             }
         }
@@ -116,23 +116,23 @@ public class ReducedErrorPruner {
      * @param child
      * @return
      */
-    private String findLeaveNode(DecisionTreeNode child) {
+    private String findLeafNode(DecisionTreeNode child) {
         double accuracyWithBestLabel = 0;
-        double searchBestLeaveNode;
-        String leaveNodeValue = null;
-        HashMap<String, DecisionTreeNode> splitsChace = child.getSplits();
-        int attributeIndexChace = child.getAttributeIndex();
+        double searchBestLeafNode;
+        String leafNodeValue = null;
+        HashMap<String, DecisionTreeNode> splitsCache = child.getSplits();
+        int attributeIndexCache = child.getAttributeIndex();
         for (int a = 0; a < range.size(); a++) {
             child.resetSplits((String) range.get(a), null);
             child.setAttributeIndex(labelAttributeId);
-            searchBestLeaveNode = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
-            if (searchBestLeaveNode > accuracyWithBestLabel) {
-                accuracyWithBestLabel = searchBestLeaveNode;
-                leaveNodeValue = (String) range.get(a);
+            searchBestLeafNode = Tester.test((List<CSVAttribute[]>) validationExamples, trainedDecisionTree, labelAttributeId);
+            if (searchBestLeafNode > accuracyWithBestLabel) {
+                accuracyWithBestLabel = searchBestLeafNode;
+                leafNodeValue = (String) range.get(a);
             }
         }
-        child.setAttributeIndex(attributeIndexChace);
-        child.resetSplits(splitsChace);
-        return leaveNodeValue;
+        child.setAttributeIndex(attributeIndexCache);
+        child.resetSplits(splitsCache);
+        return leafNodeValue;
     }
 }

@@ -9,6 +9,13 @@ import java.util.List;
 
 public class Variance {
 
+    /**
+     * Only works with continuous values.
+     * @param matrix
+     * @param labelIndex
+     * @return
+     */
+
     public static List<Double> calcInformationGain(Collection<CSVAttribute[]> matrix, int labelIndex) {
         List<Double> outcome = new ArrayList<>();
         CSVAttribute[][] attributesAsArray = Main.convetToArray((List<CSVAttribute[]>) matrix);

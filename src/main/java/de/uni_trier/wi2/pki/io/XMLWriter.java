@@ -1,7 +1,6 @@
 package de.uni_trier.wi2.pki.io;
 
 import de.uni_trier.wi2.pki.Main;
-import de.uni_trier.wi2.pki.Settings;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -41,7 +40,7 @@ public class XMLWriter {
     static Document doc;
 
     public static void writeXML(String path, DecisionTreeNode decisionTree) throws IOException {
-        init(decisionTree);
+        setupWriter(decisionTree);
         buildXmlTree(decisionTree, firstSplitt, doc);
         try (FileOutputStream output = new FileOutputStream(path)) {
             writeXml(doc, output);
@@ -52,7 +51,8 @@ public class XMLWriter {
         }
     }
 
-    private static void init(DecisionTreeNode decisionTree) {
+
+    private static void setupWriter(DecisionTreeNode decisionTree) {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         try {
@@ -68,6 +68,12 @@ public class XMLWriter {
         rootElement.appendChild(firstSplitt);
     }
 
+    /**
+     * Builds decisionTree trough depth-first-search.
+     * @param decisionTree
+     * @param parent
+     * @param doc
+     */
     private static void buildXmlTree(DecisionTreeNode decisionTree, Element parent, Document doc) {
         HashMap<String, DecisionTreeNode> map = decisionTree.getSplits();
         for (HashMap.Entry<String, DecisionTreeNode> branch : map.entrySet()) {
@@ -75,19 +81,30 @@ public class XMLWriter {
             if (child == null)
                 return;
             Element childElement = doc.createElement(classTitle);
-            String b = branch.getKey();
-            childElement = testIfLeaveNode(child, childElement, doc);
+            childElement = testIfLeafNode(child, childElement, doc);
+
+            String value = branch.getKey();
+            Attr attributeName = doc.createAttribute("value");
+            attributeName.setValue(value);
+
             Element compareElement = doc.createElement("IF");
             parent.appendChild(compareElement);
-            Attr attributeName = doc.createAttribute("value");
-            attributeName.setValue(b);
             compareElement.setAttributeNode(attributeName);
             compareElement.appendChild(childElement);
+
             buildXmlTree(child, childElement, doc);
         }
     }
 
-    private static Element testIfLeaveNode(DecisionTreeNode child, Element childElement, Document doc) {
+    /**
+     * Detects if node is a leaf and marks it with leaf node.
+     * Otherwise it gets labeled with its value for the represented attribute.
+     * @param child
+     * @param childElement
+     * @param doc
+     * @return
+     */
+    private static Element testIfLeafNode(DecisionTreeNode child, Element childElement, Document doc) {
         if (child.getSplits().
                 size() == 1) {
             childElement = doc.createElement("LeafNode");

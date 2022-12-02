@@ -8,19 +8,19 @@ import java.util.Collection;
 import java.util.List;
 
 public class GiniImpurity {
-    /**
-     * Calculates the information gain for all attributes
-     *
-     * @param matrix     Matrix of the training data (example data), e.g. ArrayList<String[]>
-     * @param labelIndex the index of the attribute that contains the class. If the dataset is [Temperature,Weather,PlayFootball] and you want to predict playing
-     * football, than labelIndex is 2
-     * @return the information gain for each attribute
-     */
 
     static List<String> range;
     static CSVAttribute[][] attributesAsArray;
     static int sizeOfMatrix;
 
+    /**
+     * Calculates the information gain for all attributes. Works essentially like EntropyUtils with just some minor adjustments to the formula.
+     *
+     * @param matrix     Matrix of the training data (example data), e.g. ArrayList<String[]>
+     * @param labelIndex the index of the attribute that contains the class. If the dataset is [Temperature,Weather,PlayFootball] and you want to predict playing
+     *                   football, than labelIndex is 2.
+     * @return the information gain for each attribute
+     */
     public static List<Double> calcInformationGain(Collection<CSVAttribute[]> matrix, int labelIndex) {
         List<Double> gains = new ArrayList<>();     //A list of gain values
         List<CSVAttribute[]> listMatrix = (List<CSVAttribute[]>) matrix;   //Conversion from Collection to List
@@ -38,7 +38,7 @@ public class GiniImpurity {
     }
 
     /**
-     * Calculates R(A) from the labelIndexToAnalyze column
+     * Calculates R(A) from the labelIndexToAnalyze column.
      * @param matrix
      * @param labelIndexToAnalyze
      * @param labelIndex
@@ -57,7 +57,7 @@ public class GiniImpurity {
     }
 
     /**
-     * Iterates over all the different attribute values ​​of the labelIndex column (the column whose value is to be predicted).
+     * Iterates over all the different attribute values of the labelIndex column (the column whose value is to be predicted).
      *
      * @param labelIndexToAnalyze
      * @param rangeToAnalyze
@@ -78,7 +78,7 @@ public class GiniImpurity {
     }
 
     /**
-     * The entire table is iterated line by line and it is tested whether the attribute value from labelIndexToAnalyze and the attribute value from labelIndex occur at the same time
+     * The entire table is iterated line by line, and it is tested whether the attribute value from labelIndexToAnalyze and the attribute value from labelIndex occur at the same time.
      *
      * @param labelIndexToAnalyze
      * @param valueToAnalyze

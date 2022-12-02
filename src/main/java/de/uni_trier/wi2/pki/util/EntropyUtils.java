@@ -42,7 +42,7 @@ public class EntropyUtils {
     }
 
     /**
-     * Calculates R(A) from the labelIndexToAnalyze column
+     * Calculates R(A) from the labelIndexToAnalyze column.
      * @param matrix
      * @param labelIndexToAnalyze
      * @param labelIndex
@@ -83,7 +83,7 @@ public class EntropyUtils {
     }
 
     /**
-     * The entire table is iterated line by line and it is tested whether the attribute value from labelIndexToAnalyze and the attribute value from labelIndex occur at the same time
+     * The entire table is iterated line by line, and it is tested whether the attribute value from labelIndexToAnalyze and the attribute value from labelIndex occur at the same time.
      *
      * @param labelIndexToAnalyze
      * @param valueToAnalyze
@@ -91,7 +91,7 @@ public class EntropyUtils {
      * @param vlaueFromRange
      * @return
      */
-    public static int countOcourences(int labelIndexToAnalyze, String valueToAnalyze, int labelIndex, String vlaueFromRange) {
+    private static int countOcourences(int labelIndexToAnalyze, String valueToAnalyze, int labelIndex, String vlaueFromRange) {
         int counter = 0;
         for (int j = 0; j < sizeOfMatrix; j++) {
             if (attributesAsArray[j][labelIndexToAnalyze].getValue().equals(valueToAnalyze) && attributesAsArray[j][labelIndex].getValue().equals(vlaueFromRange)) {
