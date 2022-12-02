@@ -16,7 +16,6 @@ public class Tester {
         for (CSVAttribute[] line : compare)
             testLine(line, decisionTree, labelIndex);
         double accuracyOfRightPredicted = (double) counter / (compare.size());
-        //return df.format(a) + "% Wrong predicted lines";
         return accuracyOfRightPredicted;
     }
 

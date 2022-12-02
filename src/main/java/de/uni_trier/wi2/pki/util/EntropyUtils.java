@@ -32,12 +32,9 @@ public class EntropyUtils {
         sizeOfMatrix = matrix.size();
         attributesAsArray = Main.convetToArray(listMatrix);
         double he = he(listMatrix, labelIndex, range); //Berechnung von H(E)
-        //System.out.println("Label: " + Main.getIndexName((int) matrix1.get(0)[labelIndex].getAttributIndex())); //Ausgabe von Informationen über labelindex an diesem Zweig
-        //System.out.println("H(E) = " + he);
         for (int i = 0; i < listMatrix.get(0).length; i++) { //Es wird über alle Spalten Iteriert (bis auf labelIndex) und deren Informationsgehalt bestimmt
             if (!(i == labelIndex)) {
                 gains.add(he - ra(listMatrix, i, labelIndex));  //Gain(A) = H(E) - R(A)
-                // System.out.println("Gain: " + gains.get(i));
             }
         }
         return gains;
@@ -68,7 +65,7 @@ public class EntropyUtils {
         return heOfk;
     }
 
-    private static int countOcourences(int labelIndexToAnalyze, String valueToAnalyze, int labelIndex, String vlaueFromRange) {
+    public static int countOcourences(int labelIndexToAnalyze, String valueToAnalyze, int labelIndex, String vlaueFromRange) {
         int counter = 0;
         for (int j = 0; j < sizeOfMatrix; j++) {   //Es wird über die gesamte Tabelle Zeile für Zeile iteriert, und getestet, ob der Attributwert aus labelIndexToAnalyze und der Attributwert aus labelIndex gleichzeitig vorkommen
             if (attributesAsArray[j][labelIndexToAnalyze].getValue().equals(valueToAnalyze) && attributesAsArray[j][labelIndex].getValue().equals(vlaueFromRange)) {         //Dies muss für alle aus labelIndexToAnalyze*labelIndex vorgenommen werden
@@ -84,11 +81,7 @@ public class EntropyUtils {
     }
 
     private static double he(List<CSVAttribute[]> matrix1, int labelIndex, List range) {    //Berechnet H(E) der Spalte, deren Wert vorhergesagt werden soll
-        //System.out.println(range);
         int[] rangeCounter = Main.rangeCounter(matrix1, range, labelIndex);
-        /*for (int a : rangeCounter)
-            System.out.print(a + " ");
-        System.out.println();*/
         double he = 0;
         for (double a : rangeCounter) {
             double b = -(a / (double) matrix1.size());

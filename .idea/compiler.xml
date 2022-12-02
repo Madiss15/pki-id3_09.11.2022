@@ -12,6 +12,7 @@
         <module name="pki_projekt-16.11.2022" />
         <module name="pki_projekt-28.11.2022" />
         <module name="pki-id3" />
+        <module name="pki_projekt_alt" />
         <module name="pki-id3_09.11.2022" />
         <module name="pki-id3_05.11.2022" />
       </profile>

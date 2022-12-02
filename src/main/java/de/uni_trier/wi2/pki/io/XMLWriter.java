@@ -41,11 +41,8 @@ public class XMLWriter {
     static Document doc;
 
     public static void writeXML(String path, DecisionTreeNode decisionTree) throws IOException {
-
         init(decisionTree);
-        testIfSameLeaveNode(decisionTree);
         buildXmlTree(decisionTree, firstSplitt, doc);
-
         try (FileOutputStream output = new FileOutputStream(path)) {
             writeXml(doc, output);
         } catch (IOException e) {
@@ -74,11 +71,11 @@ public class XMLWriter {
     private static void buildXmlTree(DecisionTreeNode decisionTree, Element parent, Document doc) {
         HashMap<String, DecisionTreeNode> map = decisionTree.getSplits();
         for (HashMap.Entry<String, DecisionTreeNode> branch : map.entrySet()) {
-            Element childElement = doc.createElement(classTitle);
-            String b = branch.getKey();
             DecisionTreeNode child = branch.getValue();
             if (child == null)
                 return;
+            Element childElement = doc.createElement(classTitle);
+            String b = branch.getKey();
             childElement = testIfLeaveNode(child, childElement, doc);
             Element compareElement = doc.createElement("IF");
             parent.appendChild(compareElement);
@@ -100,44 +97,13 @@ public class XMLWriter {
         return childElement;
     }
 
-    private static String testIfSameLeaveNode(DecisionTreeNode decisionTree) {
-        HashMap<String, DecisionTreeNode> map = decisionTree.getSplits();
-        int counter = 0;
-        String[] leave = new String[map.size()];
-        for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
-            String b = test.getKey();
-            DecisionTreeNode child = test.getValue();
-            if (child == null)
-                return b;
-            leave[counter] = testIfSameLeaveNode(child);
-            counter++;
-        }
-        setNewLeaveNode(decisionTree, leave);
-        return null;
-    }
-
-    private static void setNewLeaveNode(DecisionTreeNode decisionTree, String[] leave) {
-        boolean same = true;
-        if (leave[0] != null) {
-            for (String a : leave)
-                if (!leave[0].equals(a))
-                    same = false;
-            if (same) {
-                decisionTree.resetSplits(leave[0], null);
-                decisionTree.setAttributeIndex(Settings.getLabelIndex());
-            }
-        }
-    }
 
     private static void writeXml(Document doc, OutputStream output) throws TransformerException {
-
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-
         DOMSource source = new DOMSource(doc);
         StreamResult result = new StreamResult(output);
-
         transformer.transform(source, result);
     }
 }

@@ -3,20 +3,32 @@ package de.uni_trier.wi2.pki;
 public class Settings {
 
 
-    static int labelIndex = 0;                  //Das Ergebnis dieser Spalte soll prognostiziert werden
+    static int labelIndex = 6;
 
-    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smaller.csv"; //Ort der zu untersuchenden CSV-Datei
-    static String xmlPath = "src/main/resources/xml/Run2.xml";     //Ort der generierten XML-Datei
+    static String sourcePath = "src/main/resources/Weather.csv";
+    static String xmlPath = "src/main/resources/xml/Run1.xml";
+    /**
+     * This value should be true if the attribute names are on the first line
+     */
+    static boolean ignoreHead = true;
+    static String delimiter = ";";
 
-    static boolean ignoreHead = true;          //Dieser Wert soll true sein, wenn in der ersten Zeile die Attributbezeichnungen stehen
-    static String delimiter = ",";             //Das Trennzeichen in der CSV-Datei
-    static boolean testIfDiscrete = false;      //true: Potenzielle bereits diskrete Attribute werden erfasst (Es wird erfasst, ob in einer Spalte nur ganze Zahlen stehen), false: Es wird nur auf kategorische und kontinuierliche Werte getestet
+    /**
+     * true: potential already discrete attributes are recorded (it is recorded whether a column contains only integers), false: only categorical and continuous values are tested
+     */
+    static boolean testIfDiscrete = false;
 
-    static int numberOfBins = 5;                //Anzahl der Bins, es wird ab 1 gezählt
-    static boolean binningProcedure = true;     //true: Gleiche Intervallgröße, false: gleiche Punkteanzahl pro Intervall
-    static boolean individualBins = false;      //true: Es wird für jede Spalte eine individuelle Anzahl von Bins angefordert, false: es wird immer numberOfBins angewendet
+    static int numberOfBins = 5;
+    /**
+     * true: same interval size, false: same number of points per interval
+     */
+    static boolean binningProcedure = true;
+    /**
+     * true: an individual number of bins is requested for each column, false: numberOfBins is always applied
+     */
+    static boolean individualBins = false;
 
-    static int numFolds = 2;
+    static int numFolds = 3;
 
     public static void setLabelIndex(int labelIndex) {
         Settings.labelIndex = labelIndex;
