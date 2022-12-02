@@ -44,7 +44,7 @@ public class ReducedErrorPruner {
             findNodeToPrune(trainedDecisionTree);
             nodeToPrune.resetSplits(findLeaveNode(nodeToPrune), null);
             nodeToPrune.setAttributeIndex(labelAttributeId);
-        } while (currentBest>=originalClassificationAccuracy);
+        } while (currentBest>originalClassificationAccuracy);
     }
 
     public void findNodeToPrune(DecisionTreeNode subTree) {
@@ -72,6 +72,10 @@ public class ReducedErrorPruner {
         child.setAttributeIndex(attributeIndexChace);
     }
 
+    /**
+     *
+     * @param subTree
+     */
     private void setProminentLabel(DecisionTreeNode subTree) {
         HashMap<String, DecisionTreeNode> map = subTree.getSplits();
         for (HashMap.Entry<String, DecisionTreeNode> test : map.entrySet()) {
@@ -83,6 +87,14 @@ public class ReducedErrorPruner {
         }
     }
 
+    /**
+     *Receives a node, saves its splits and attribute index temporarily and now converts the node to a leaf node for all values of the label attribute,
+     *it is registered for which value as a leaf node the classification-accuracy is highest and this value is saved in ProminentLabel.
+     *After that the node receives its original values from the cache again.
+     *
+     * @param child
+     * @return
+     */
     private String findLeaveNode(DecisionTreeNode child) {
         double accuracyWithBestLabel = 0;
         double searchBestLeaveNode;

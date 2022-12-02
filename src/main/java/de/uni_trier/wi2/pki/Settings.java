@@ -5,7 +5,7 @@ public class Settings {
 
     static int labelIndex = 0;
 
-    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-small.csv";
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015.csv";
     static String xmlPath = "src/main/resources/xml/Run1.xml";
     /**
      * This value should be true if the attribute names are on the first line
@@ -26,7 +26,7 @@ public class Settings {
     /**
      * set which formula should be used to calculate the information gain 1 = EntropyUtils/ID3, 2 = Variance, 3 = GiniImpurity
      */
-    static int formularForGain = 3;
+    static int formularForGain = 1;
     /**
      * true: same interval size, false: same number of points per interval
      */
