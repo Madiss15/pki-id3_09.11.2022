@@ -3,13 +3,11 @@ package de.uni_trier.wi2.pki.postprocess;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 
 public class Tester {
     static int counter;
-    //private static final DecimalFormat df = new DecimalFormat("0.000");
 
     public static double test(List<CSVAttribute[]> compare, DecisionTreeNode decisionTree, int labelIndex) {
         counter = 0;

@@ -5,7 +5,7 @@ public class Settings {
 
     static int labelIndex = 0;
 
-    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-smallest.csv";
+    static String sourcePath = "src/main/resources/diabetes_binary_5050split_health_indicators_BRFSS2015-small.csv";
     static String xmlPath = "src/main/resources/xml/Run1.xml";
     /**
      * This value should be true if the attribute names are on the first line
@@ -18,7 +18,15 @@ public class Settings {
      */
     static boolean testIfDiscrete = false;
 
-    static int numberOfBins = 3;
+    /**
+     * counting starts at 1
+     */
+    static int numberOfBins = 5;
+
+    /**
+     * set which formula should be used to calculate the information gain 1 = EntropyUtils/ID3, 2 = Variance, 3 = GiniImpurity
+     */
+    static int formularForGain = 3;
     /**
      * true: same interval size, false: same number of points per interval
      */
@@ -28,7 +36,12 @@ public class Settings {
      */
     static boolean individualBins = false;
 
-    static int numFolds = 3;
+    /**
+     * activate or deactivate pruner
+     */
+    static boolean prunerActive = true;
+
+    static int numFolds = 5;
 
     public static void setLabelIndex(int labelIndex) {
         Settings.labelIndex = labelIndex;
@@ -73,4 +86,13 @@ public class Settings {
     public static int getNumFolds() {
         return numFolds;
     }
+
+    public static int getFormularForGain() {
+        return formularForGain;
+    }
+
+    public static boolean isPrunerActive() {
+        return prunerActive;
+    }
+
 }

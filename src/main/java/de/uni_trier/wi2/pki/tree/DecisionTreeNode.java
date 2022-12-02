@@ -22,9 +22,12 @@ public class DecisionTreeNode {
      * The checked split condition values and the nodes for these conditions.
      */
 
-    protected String prominentLabel;
-
     HashMap<String, DecisionTreeNode> splits = new HashMap<>();
+
+    /**
+     * the most common result for this branch depending on the test data (is used for pruning)
+     */
+    protected String prominentLabel;
 
     public void setParent(DecisionTreeNode d) {
         parent = d;

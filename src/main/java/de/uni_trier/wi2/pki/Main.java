@@ -66,10 +66,10 @@ public class Main {
 
     public static void main(String[] args) {
         preProcess();
-        BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = ID3Utils::createTree;
+ /*      BiFunction<List<CSVAttribute[]>, Integer, DecisionTreeNode> trainFunction = ID3Utils::createTree;
         root = CrossValidator.performCrossValidation(attributes, labelIndex, trainFunction, numFolds);
-/*
 
+*/
         root = ID3Utils.createTree(formattedAttributes,formattedAttributes.get(0).length-1);
         try {
             XMLWriter.writeXML(xmlPath, root);  //Speichern des Baumes
@@ -77,7 +77,7 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println("Tree saved at: " + xmlPath);
-*/
+
         endTime = System.nanoTime();
         totalTime = endTime - startTime;
         System.out.println("Runtime: " + totalTime / 1000000000 + " s");

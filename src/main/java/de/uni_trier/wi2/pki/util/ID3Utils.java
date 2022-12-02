@@ -1,9 +1,11 @@
 package de.uni_trier.wi2.pki.util;
 
 import de.uni_trier.wi2.pki.Main;
+import de.uni_trier.wi2.pki.Settings;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,11 +15,11 @@ import java.util.List;
  */
 public class ID3Utils {
 
-    static List<Double> outcome;
+    static int formularForGain = Settings.getFormularForGain();
+    static List<Double> outcome = new ArrayList<>();
 
     /**
      * Create the decision tree given the example and the index of the label attribute.
-     * When a point is reached where the information content is zero, a leaf node with the most common label index is inserted.
      *
      * @param examples   The examples to train with. This is a collection of arrays.
      * @param labelIndex The label of the attribute that should be used as an index.
@@ -27,18 +29,26 @@ public class ID3Utils {
     public static DecisionTreeNode createTree(Collection<CSVAttribute[]> examples, int labelIndex) {
         List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples;
 
-        if (Main.rangeFinder(attributes, labelIndex).size() <= 1)
+        if (Main.rangeFinder(attributes, labelIndex).size() <= 1) // If only one more unique value occurs at the labelIndex position, a leaf node is created with this value
             return setLeave(attributes, labelIndex);
         int bestIndex = getIndexOfBestAttribute(examples, labelIndex);
 
-        if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0)
+        if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0) // When a point is reached where the information content is zero, a leaf node with the most common label index is inserted.
             return gainIsZero(attributes, labelIndex);
 
         CSVAttribute[][] attributesAsArray = Main.convetToArray(attributes);
         return setupRoot(bestIndex, attributesAsArray, labelIndex, attributes);
     }
 
-
+    /**
+     * After identifying the best attribute for creating the branches, a node is added to split for each different value
+     *
+     * @param bestIndex
+     * @param attributesAsArray
+     * @param labelIndex
+     * @param attributes
+     * @return
+     */
     private static DecisionTreeNode setupRoot(int bestIndex, CSVAttribute[][] attributesAsArray, int labelIndex, List<CSVAttribute[]> attributes) {
         DecisionTreeNode root = new DecisionTreeNode();
         root.setAttributeIndex((int) attributesAsArray[0][bestIndex].getAttributIndex());
@@ -51,6 +61,15 @@ public class ID3Utils {
         return root;
     }
 
+    /**
+     * a new sublist is now created that no longer contains the attribute that was previously compared. However, the list only contains lines in which the characteristic of the compared attribute was the same.
+     * This means there are as many sub-lists as there were different characteristics for the attribute
+     *
+     * @param bestIndex
+     * @param rangeValue
+     * @param attributesAsArray
+     * @return
+     */
     private static LinkedList<CSVAttribute[]> calcAttributesAfterSplit(int bestIndex, String rangeValue, CSVAttribute[][] attributesAsArray) {
         LinkedList<CSVAttribute[]> attributesAfterSplit = new LinkedList<CSVAttribute[]>();
         for (int i = 0; i < attributesAsArray.length; i++) {
@@ -67,16 +86,24 @@ public class ID3Utils {
         return attributesAfterSplit;
     }
 
-     static DecisionTreeNode setLeave(List<CSVAttribute[]> attributes, int labelIndex) {
+
+    private static DecisionTreeNode setLeave(List<CSVAttribute[]> attributes, int labelIndex) {
         DecisionTreeNode root = new DecisionTreeNode();
         root.setAttributeIndex((int) attributes.get(0)[labelIndex].getAttributIndex());
-        root.setSplits((String) attributes.get(0)[labelIndex].getValue(), null);        //Der Blattknoten erhält den Wert von labelIndex
+        root.setSplits((String) attributes.get(0)[labelIndex].getValue(), null);        //The leaf node gets the value of labelIndex
         return root;
     }
 
+    /**
+     * find the best column to compare
+     *
+     * @param examples
+     * @param labelIndex
+     * @return
+     */
     private static int getIndexOfBestAttribute(Collection<CSVAttribute[]> examples, int labelIndex) {
-        outcome = EntropyUtils.calcInformationGain(examples, labelIndex);  //Ermittlung des Informationsgehalts aus den aktuellen Spalten
         int bestIndex = 0;
+        setForlmularForIGain(examples, labelIndex);
         for (int k = 0; k < outcome.size(); k++) {      //Ermittlung des größten Informationsgehalts aus den aktuellen Spalten
             if (outcome.get(k) > outcome.get(bestIndex)) {
                 bestIndex = k;
@@ -85,9 +112,34 @@ public class ID3Utils {
         return bestIndex;
     }
 
+    /**
+     * setzt die formle zum berechenen der informationsgehalte und erzeigt eine Liste mit dem informationsgehalten
+     * @param examples
+     * @param labelIndex
+     */
+    private static void setForlmularForIGain(Collection<CSVAttribute[]> examples, int labelIndex) {
+        switch (formularForGain) {
+            case 1:
+                outcome = EntropyUtils.calcInformationGain(examples, labelIndex);
+                break;
+            case 2:
+                outcome = Variance.calcInformationGain(examples, labelIndex);
+                break;
+            case 3:
+                outcome = GiniImpurity.calcInformationGain(examples, labelIndex);
+                break;
+        }
+    }
+
+    /**
+     *In order to still be able to assign a leaf node, it is determined which labelIndex value occurs most frequently, this is selected as the LeafNode class
+     * @param attributes
+     * @param labelIndex
+     * @return
+     */
     private static DecisionTreeNode gainIsZero(List<CSVAttribute[]> attributes, int labelIndex) {
         DecisionTreeNode root = new DecisionTreeNode();
-        List range = Main.rangeFinder(attributes, labelIndex);      //Um trotzdem einen Blattknoten zuordnen zu können, wird ermittelt welcher labelIndex Wert am häufigsten auftritt, dieser wird als LeafNode class gewählt
+        List range = Main.rangeFinder(attributes, labelIndex);
         int[] rangeCounter = Main.rangeCounter(attributes, range, labelIndex);
         int mostLikelyValue = 0;
         for (int k = 0; k < rangeCounter.length; k++) {

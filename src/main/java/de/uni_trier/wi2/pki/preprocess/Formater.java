@@ -14,27 +14,36 @@ public class Formater {
     static CSVAttribute[][] cache;
     static CSVAttribute[] toMove;
 
+    /**
+     * Unfortunately the code only works if the label attribute is in the last colum, so in all other cases it has to be moved to the end.
+     * We are aware of the loss of performance.
+     *
+     * @param attributes
+     * @param labelIndex
+     * @return
+     */
     public static List<CSVAttribute[]> format(List<CSVAttribute[]> attributes, int labelIndex) {
         if (attributes.get(0).length == labelIndex - 1)
             return attributes;
         height = attributes.size();
         width = attributes.get(0).length;
+
         attributesAsArray = new CSVAttribute[height][width];
         cache = new CSVAttribute[height][width];
-        toMove = new CSVAttribute[height];
+        toMove = new CSVAttribute[height]; //the label attribute column that needs to be moved
         moveToRightPosition(attributes, labelIndex);
         return formatedAtributes;
     }
 
     public static void moveToRightPosition(List<CSVAttribute[]> attributes, int labelIndex) {
         for (int k = 0; k < height; k++) {
-            attributesAsArray[k] = attributes.get(k);
+            attributesAsArray[k] = attributes.get(k); //Converts a list to a 2-dimensional array. Using 2D arrays has been shown to improve performance.
             toMove[k] = attributesAsArray[k][labelIndex];
         }
         for (int k = 0; k < height; k++) {
             int skipper = 0;
             for (int i = 0; i < width - 1; i++) {
-                if (i == labelIndex)
+                if (i == labelIndex) //the label attribute column is skipped
                     skipper++;
                 cache[k][i] = attributesAsArray[k][i + skipper];
             }
