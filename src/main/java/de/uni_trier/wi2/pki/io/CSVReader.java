@@ -38,10 +38,8 @@ public class CSVReader {
             }
             reader.close();
         } catch (FileNotFoundException e) {
-            System.out.println("No file found");
             return null;
         } catch (IOException e) {
-            System.out.println("File seems corrupted");
             e.printStackTrace();
         }
         System.out.println("------------------------------");
@@ -54,7 +52,7 @@ public class CSVReader {
         try {
             reader = new BufferedReader(new FileReader(relativePath));
             if (ignoreHeader)
-                Main.setAttributeName(reader.readLine().split(delimiter));    //Die Attributbezeichnungen werden gespeichert, wenn ignoreHeader true
+                Main.setAttributeName(reader.readLine().split(delimiter));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

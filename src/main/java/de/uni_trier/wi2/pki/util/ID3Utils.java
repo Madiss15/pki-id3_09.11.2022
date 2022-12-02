@@ -4,8 +4,6 @@ import de.uni_trier.wi2.pki.Main;
 import de.uni_trier.wi2.pki.io.attr.CSVAttribute;
 import de.uni_trier.wi2.pki.tree.DecisionTreeNode;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +17,7 @@ public class ID3Utils {
 
     /**
      * Create the decision tree given the example and the index of the label attribute.
+     * When a point is reached where the information content is zero, a leaf node with the most common label index is inserted.
      *
      * @param examples   The examples to train with. This is a collection of arrays.
      * @param labelIndex The label of the attribute that should be used as an index.
@@ -26,15 +25,19 @@ public class ID3Utils {
      */
 
     public static DecisionTreeNode createTree(Collection<CSVAttribute[]> examples, int labelIndex) {
-        List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples; //Konvertierung von der Collection zur List
-        if (Main.rangeFinder(attributes, labelIndex).size() <= 1)
-            return testIfLeave(attributes, labelIndex);
+        List<CSVAttribute[]> attributes = (List<CSVAttribute[]>) examples;
         int bestIndex = getIndexOfBestAttribute(examples, labelIndex);
-        if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0)    //Wenn die Liste mit den Informationsgehalten leer ist oder der beste Wert 0, wurde ein Zustand erreicht, in dem die gleichen Attributsausprägungen zu unterschiedlichen Ergebnissen führen
+
+        if (Main.rangeFinder(attributes, labelIndex).size() <= 1)
+            return setLeave(attributes, labelIndex);
+
+        if (outcome == null || outcome.size() == 0 || outcome.get(bestIndex) == 0)
             return gainIsZero(attributes, labelIndex);
+
         CSVAttribute[][] attributesAsArray = Main.convetToArray(attributes);
         return setupRoot(bestIndex, attributesAsArray, labelIndex, attributes);
     }
+
 
     private static DecisionTreeNode setupRoot(int bestIndex, CSVAttribute[][] attributesAsArray, int labelIndex, List<CSVAttribute[]> attributes) {
         DecisionTreeNode root = new DecisionTreeNode();
@@ -64,7 +67,7 @@ public class ID3Utils {
         return attributesAfterSplit;
     }
 
-    public static DecisionTreeNode testIfLeave(List<CSVAttribute[]> attributes, int labelIndex) {
+    public static DecisionTreeNode setLeave(List<CSVAttribute[]> attributes, int labelIndex) {
         DecisionTreeNode root = new DecisionTreeNode();
         root.setAttributeIndex((int) attributes.get(0)[labelIndex].getAttributIndex());
         root.setSplits((String) attributes.get(0)[labelIndex].getValue(), null);        //Der Blattknoten erhält den Wert von labelIndex
